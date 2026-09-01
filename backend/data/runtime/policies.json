@@ -1,0 +1,30 @@
+[
+  {
+    "name": "critical_block",
+    "condition": "risk_level == 'CRITICAL'",
+    "action": "BLOCK",
+    "priority": 100,
+    "enabled": true
+  },
+  {
+    "name": "high_review",
+    "condition": "risk_level == 'HIGH'",
+    "action": "REVIEW",
+    "priority": 90,
+    "enabled": true
+  },
+  {
+    "name": "medium_monitor",
+    "condition": "risk_level == 'MEDIUM'",
+    "action": "ALLOW + MONITOR",
+    "priority": 80,
+    "enabled": true
+  },
+  {
+    "name": "low_allow",
+    "condition": "risk_level == 'LOW'",
+    "action": "ALLOW",
+    "priority": 70,
+    "enabled": true
+  }
+]
