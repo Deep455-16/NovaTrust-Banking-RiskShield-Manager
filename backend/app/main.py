@@ -245,33 +245,46 @@ async def score_transaction(transaction: Dict[str, Any], current_user: User = De
         BASELINE_AMOUNT = 300.0
         computed_amount_deviation = max(0.0, amount - BASELINE_AMOUNT)
 
-        # User can still override with explicit amount_deviation field if provided
+        # User can still override with explicit fields if provided
         raw_amount_dev = float(transaction.get("amount_deviation", None) or computed_amount_deviation)
         raw_velocity = float(transaction.get("transaction_velocity", 0) or 0)
         raw_is_first_time = bool(transaction.get("is_first_time_pair", False))
         raw_patterns = list(transaction.get("suspicious_patterns", []) or [])
 
-        # ── Rule-based fraud probability from amount (always responsive) ──
+        # ── Rule-based signals (always responsive) ──
+        # 1. Fraud Probability (Base: 50% of total score)
         if amount < 100:
             rule_fraud_prob = 0.05
         elif amount < 500:
-            rule_fraud_prob = 0.15
+            rule_fraud_prob = 0.20
         elif amount < 1000:
-            rule_fraud_prob = 0.32
+            rule_fraud_prob = 0.45
         elif amount < 3000:
-            rule_fraud_prob = 0.55
+            rule_fraud_prob = 0.70
         elif amount < 7000:
-            rule_fraud_prob = 0.72
-        elif amount < 15000:
             rule_fraud_prob = 0.85
         else:
             rule_fraud_prob = 0.95
 
-        # Boost for first-time pairs and known suspicious patterns
-        if raw_is_first_time:
-            rule_fraud_prob = min(rule_fraud_prob + 0.10, 1.0)
+        # 2. Anomaly Score (Base: 20% of total score)
+        # Driven by high velocity, huge amount deviations, or weird patterns
+        rule_anomaly_score = 0.0
+        if amount > 5000:
+            rule_anomaly_score += 0.4
+        if raw_velocity > 10:
+            rule_anomaly_score += min(raw_velocity * 0.05, 0.4)
         if len(raw_patterns) > 0:
-            rule_fraud_prob = min(rule_fraud_prob + 0.05 * len(raw_patterns), 1.0)
+            rule_anomaly_score += 0.3
+
+        # Boosts
+        if raw_is_first_time:
+            rule_fraud_prob += 0.15
+            rule_anomaly_score += 0.2
+        if len(raw_patterns) > 0:
+            rule_fraud_prob += 0.15
+
+        rule_fraud_prob = min(rule_fraud_prob, 1.0)
+        rule_anomaly_score = min(rule_anomaly_score, 1.0)
 
         # ── Try ML model — use rule-based as fallback if unavailable ──
         safe_txn = {
@@ -288,8 +301,8 @@ async def score_transaction(transaction: Dict[str, Any], current_user: User = De
             "customer_gender": str(transaction.get("customer_gender", "UNKNOWN")),
         }
 
-        fraud_prob = rule_fraud_prob   # default to rule-based
-        anomaly_score = 0.0
+        fraud_prob = rule_fraud_prob       # default to dynamic rule
+        anomaly_score = rule_anomaly_score # default to dynamic rule
         X = None
         ml_used = False
         try:
