@@ -186,7 +186,6 @@ async def profile_dataset(dataset_name: str, current_user: User = Depends(get_cu
         raise HTTPException(status_code=404, detail="Dataset not available")
     return profile
 
-
 @app.post("/api/v1/models/train")
 async def train_model(dataset_selection: DatasetSelection, model_name: str = Query("weighted_lightgbm"), current_user: User = Depends(get_current_user)):
     if not has_permission(current_user.role, "write"):
@@ -201,7 +200,10 @@ async def train_model(dataset_selection: DatasetSelection, model_name: str = Que
         test_df = processed_df[processed_df["step"] > 600]
     else:
         from sklearn.model_selection import train_test_split
-        train_df, test_df = train_test_split(processed_df, test_size=0.2, stratify=processed_df["fraud_label"], random_state=42)
+        # Only stratify if there are at least 2 classes — prevents crash on datasets with no fraud column
+        n_classes = processed_df["fraud_label"].nunique()
+        stratify = processed_df["fraud_label"] if n_classes >= 2 else None
+        train_df, test_df = train_test_split(processed_df, test_size=0.2, stratify=stratify, random_state=42)
     X_train = app_state["preprocessor"].get_feature_matrix(train_df)
     y_train = train_df["fraud_label"].values
     X_test = app_state["preprocessor"].get_feature_matrix(test_df)
@@ -214,17 +216,78 @@ async def train_model(dataset_selection: DatasetSelection, model_name: str = Que
     app_state["drift_monitor"].fit(processed_df, features)
     app_state["training_fraud_rate"] = float(y_train.mean())
     if model_name in app_state["models"].models:
-        model = app_state["models"].models[model_name].artifact.model
-        app_state["shap_explainer"] = SHAPExplainer(model, features)
-        app_state["shap_explainer"].fit(X_train)
-        
+        try:
+            model = app_state["models"].models[model_name].artifact.model
+            app_state["shap_explainer"] = SHAPExplainer(model, features)
+            app_state["shap_explainer"].fit(X_train)
+        except Exception:
+            pass
     # Build the transaction graph network from the dataset so Graph Risk populates
     try:
         app_state["transaction_graph"].build_from_transactions(df.to_dict("records"))
     except Exception as e:
         print(f"Graph build failed: {e}")
-
     return {"status": "success", "model": model_name, "metrics": metrics}
+
+
+@app.post("/api/v1/models/train_all")
+async def train_all_models(dataset_selection: DatasetSelection, current_user: User = Depends(get_current_user)):
+    """Train ALL registered models on the selected dataset in one click."""
+    if not has_permission(current_user.role, "write"):
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
+    df = dataset_loader.load_dataset(dataset_selection.dataset, normalize=True)
+    if df is None:
+        return {"error": "Dataset not available"}
+    processed_df, features = app_state["preprocessor"].prepare_features(df, fit=True)
+    app_state["feature_names"] = features
+    if "step" in processed_df.columns and processed_df["step"].max() > 600:
+        train_df = processed_df[processed_df["step"] <= 600]
+        test_df = processed_df[processed_df["step"] > 600]
+    else:
+        from sklearn.model_selection import train_test_split
+        n_classes = processed_df["fraud_label"].nunique()
+        stratify = processed_df["fraud_label"] if n_classes >= 2 else None
+        train_df, test_df = train_test_split(processed_df, test_size=0.2, stratify=stratify, random_state=42)
+    X_train = app_state["preprocessor"].get_feature_matrix(train_df)
+    y_train = train_df["fraud_label"].values
+    X_test = app_state["preprocessor"].get_feature_matrix(test_df)
+    y_test = test_df["fraud_label"].values
+
+    all_model_names = list(app_state["models"].model_classes.keys())
+    results = {}
+    for name in all_model_names:
+        try:
+            r = app_state["models"].train_model(name, X_train, y_train)
+            if "error" not in r:
+                m = app_state["models"].evaluate_model(name, X_test, y_test)
+                results[name] = {"status": "success", "metrics": m}
+            else:
+                results[name] = {"status": "error", "error": r["error"]}
+        except Exception as e:
+            results[name] = {"status": "error", "error": str(e)}
+
+    app_state["anomaly_detector"].fit(X_train)
+    app_state["drift_monitor"].fit(processed_df, features)
+    app_state["training_fraud_rate"] = float(y_train.mean())
+
+    # Set SHAP on the best available primary model
+    for preferred in ["weighted_lightgbm", "weighted_xgboost", "random_forest"]:
+        if preferred in app_state["models"].models:
+            try:
+                mdl = app_state["models"].models[preferred].artifact.model
+                app_state["shap_explainer"] = SHAPExplainer(mdl, features)
+                app_state["shap_explainer"].fit(X_train)
+            except Exception:
+                pass
+            break
+
+    # Build graph for all datasets
+    try:
+        app_state["transaction_graph"].build_from_transactions(df.to_dict("records"))
+    except Exception as e:
+        print(f"Graph build failed: {e}")
+
+    return {"status": "success", "dataset": dataset_selection.dataset, "results": results}
 
 
 @app.get("/api/v1/models/metrics")

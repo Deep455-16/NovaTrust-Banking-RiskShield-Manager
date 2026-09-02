@@ -48,8 +48,31 @@ export default function TrainingPage() {
     try {
       const result = await apiPost<any>(`/api/v1/models/train?model_name=${encodeURIComponent(model)}`, { dataset })
       if (result.error) throw new Error(result.error)
-      setMessage(`Training finished for ${model} on ${dataset}. Metrics were evaluated on the test split.`)
+      const modelLabel = modelOptions.find(o => o.value === model)?.label ?? model
+      const datasetLabel = datasetOptions.find(o => o.value === dataset)?.label ?? dataset
+      setMessage(`Training complete: ${modelLabel} trained on ${datasetLabel}.`)
       setActiveModel(model)
+      await refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Training failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function trainAll() {
+    setBusy(true)
+    setError('')
+    setMessage('')
+    try {
+      const result = await apiPost<any>('/api/v1/models/train_all', { dataset })
+      if (result.error) throw new Error(result.error)
+      const datasetLabel = datasetOptions.find(o => o.value === dataset)?.label ?? dataset
+      const ok = Object.entries(result.results || {}).filter(([, v]: any) => v.status === 'success').map(([k]) => k)
+      const fail = Object.entries(result.results || {}).filter(([, v]: any) => v.status !== 'success').map(([k]) => k)
+      let msg = `All models trained on ${datasetLabel}. Passed: ${ok.length} model(s).`
+      if (fail.length) msg += ` Failed: ${fail.join(', ')}.`
+      setMessage(msg)
       await refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Training failed')
@@ -90,13 +113,17 @@ export default function TrainingPage() {
         </label>
         <button onClick={train} disabled={busy}>
           <Play size={16} />
-          {busy ? 'Training' : 'Train And Test'}
+          {busy ? 'Training...' : 'Train Selected Model'}
+        </button>
+        <button onClick={trainAll} disabled={busy} className="secondary-button" style={{ marginLeft: 8 }}>
+          <Play size={16} />
+          {busy ? 'Training All...' : 'Train All Models'}
         </button>
       </section>
 
       <section className="tab-row" aria-label="Evaluated models">
         {Object.keys(metrics).map((name) => (
-          <button key={name} className={activeModel === name ? 'active' : ''} onClick={() => setActiveModel(name)}>{name}</button>
+          <button key={name} className={activeModel === name ? 'active' : ''} onClick={() => setActiveModel(name)}>{modelOptions.find(o => o.value === name)?.label ?? name}</button>
         ))}
       </section>
 
