@@ -1,7 +1,8 @@
 <div align="center">
-<div align="center">
  
-  🛡️ RiskShield AI
+  # 🛡️ RiskShield AI
+
+ <div align="center">
 
 ### AI-Powered Fraud-Risk Detection, Financial Intelligence & Investigation Copilot
 
