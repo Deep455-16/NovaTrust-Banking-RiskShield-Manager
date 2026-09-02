@@ -23,6 +23,32 @@
 
 ---
 
+## ⚡ Quick Install
+
+> **No coding required.** The installer automatically sets up Python, Node.js, Ollama, and the Zephyr AI model — completely silently.
+
+### 👉 [Download RiskShieldSetup.exe](https://github.com/Deep455-16/NovaTrust-Banking-RiskShield-Manager/releases/latest/download/RiskShieldSetup.exe)
+
+1. Click the link above to download `RiskShieldSetup.exe`
+2. Double-click the downloaded file to run it
+3. Watch the progress bar as everything installs automatically in the background:
+   - ✅ Python 3.11
+   - ✅ Node.js
+   - ✅ Ollama AI Runtime
+   - ✅ Zephyr 7B AI Model
+   - ✅ All backend & frontend dependencies
+4. Click **Finish** — the app opens in your browser automatically!
+
+> **For developers** who want to run from source code:
+> ```bash
+> git clone https://github.com/Deep455-16/NovaTrust-Banking-RiskShield-Manager.git
+> cd NovaTrust-Banking-RiskShield-Manager
+> install.bat       # auto-installs all dependencies
+> start_app.bat     # launches the app
+> ```
+
+---
+
 ## 🎯 Problem
 
 Financial fraud creates direct losses for merchants, banks, fintech platforms, and payment ecosystems.
