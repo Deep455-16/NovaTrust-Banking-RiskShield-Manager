@@ -201,7 +201,7 @@ export default function GraphRiskPage() {
             title="No suspicious clusters found"
             body={hasGraph
               ? "No merchant clusters exceeded the fraud-rate threshold (>10%). Try running the simulation first to build up more transaction data."
-              : "Graph alerts appear after the transaction graph is built from BankSim data at startup. Check that the backend started successfully."}
+              : "Graph alerts appear after the transaction graph is built. Go to Model Training to train a dataset first."}
           />
         )}
       </Panel>
