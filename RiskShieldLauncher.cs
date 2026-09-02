@@ -45,32 +45,28 @@ namespace RiskShieldLauncher
                 return;
             }
             
-            // Step 3: Check/Run Backend Installation
-            Console.WriteLine("[3/5] Checking backend dependencies...");
+            // Step 3 & 4: Check Dependencies
+            Console.WriteLine("[3/5] Checking application dependencies...");
             string backendDir = Path.Combine(appDir, "backend");
-            if (!Directory.Exists(Path.Combine(backendDir, ".venv")))
-            {
-                Console.WriteLine("      Setting up Python virtual environment (this may take a few minutes)...");
-                RunCommand("cmd.exe", "/c \"python -m venv .venv && call .venv\\Scripts\\activate.bat && pip install -r requirements.txt\"", backendDir);
-                Console.WriteLine("      Backend setup complete.");
-            }
-            else
-            {
-                Console.WriteLine("      Backend already configured.");
-            }
-
-            // Step 4: Check/Run Frontend Installation
-            Console.WriteLine("[4/5] Checking frontend dependencies...");
             string frontendDir = Path.Combine(appDir, "frontend");
-            if (!Directory.Exists(Path.Combine(frontendDir, "node_modules")))
+            
+            if (!Directory.Exists(Path.Combine(backendDir, ".venv")) || !Directory.Exists(Path.Combine(frontendDir, "node_modules")))
             {
-                Console.WriteLine("      Installing Node modules (this may take a few minutes)...");
-                RunCommand("cmd.exe", "/c \"npm install\"", frontendDir);
-                Console.WriteLine("      Frontend setup complete.");
+                Console.WriteLine("      Missing dependencies detected. Launching installer...");
+                
+                Process installProc = new Process();
+                installProc.StartInfo.FileName = "cmd.exe";
+                installProc.StartInfo.Arguments = "/c install.bat";
+                installProc.StartInfo.WorkingDirectory = appDir;
+                installProc.StartInfo.UseShellExecute = true;
+                installProc.Start();
+                installProc.WaitForExit();
+                
+                Console.WriteLine("      Dependency setup complete.");
             }
             else
             {
-                Console.WriteLine("      Frontend already configured.");
+                Console.WriteLine("      Dependencies already configured.");
             }
             
             // Step 5: Optional AI Copilot Setup
