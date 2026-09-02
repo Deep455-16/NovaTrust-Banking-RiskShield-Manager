@@ -1,4 +1,4 @@
-
+<div align="center">
  
   # 🛡️ RiskShield AI
 
@@ -31,7 +31,7 @@ The AI Copilot helps the analyst understand and investigate that assessment.
 
 ---
 
-# 💡 Solution
+## 💡 Solution
 
 RiskShield is built around a simple architecture:
 
@@ -88,7 +88,7 @@ Zephyr is **not** the authoritative fraud detector and cannot override the Risk 
 
 ---
 
-# 🚀 Key Features
+## 🚀 Key Features
 
 ## 🔍 1. AI-Powered Fraud-Risk Detection
 
@@ -132,7 +132,7 @@ Recommended Action:
 
 ---
 
-# 🧠 2. AI Investigation Copilot
+## 🧠 2. AI Investigation Copilot
 
 RiskShield includes an optional AI Copilot powered by:
 
@@ -168,7 +168,7 @@ What evidence supports this risk score?
 
 ---
 
-# 🔎 3. Explainable Risk Analysis
+## 🔎 3. Explainable Risk Analysis
 
 RiskShield does not simply return:
 
@@ -196,7 +196,7 @@ This makes the system more useful for human analysts and investigation workflows
 
 ---
 
-# 📊 4. Risk Evidence Generation
+## 📊 4. Risk Evidence Generation
 
 Every analyzed transaction can produce structured evidence containing:
 
@@ -213,7 +213,7 @@ Every analyzed transaction can produce structured evidence containing:
 
 ---
 
-# 📈 5. Fraud Detection Evaluation
+## 📈 5. Fraud Detection Evaluation
 
 RiskShield is designed around **measurable fraud detection performance**, rather than relying only on qualitative demonstrations.
 
@@ -271,7 +271,7 @@ This helps measure not only detection capability but also the operational impact
 
 ---
 
-# 🛡️ 6. Defense-First Architecture
+## 🛡️ 6. Defense-First Architecture
 
 RiskShield is designed as a **defensive financial-security system**.
 
@@ -288,7 +288,7 @@ The system does not provide offensive capabilities.
 
 ---
 
-# 🤖 AI Safety Architecture
+## 🤖 AI Safety Architecture
 
 Zephyr 7B is deliberately separated from the authoritative risk decision.
 
@@ -338,7 +338,7 @@ The Copilot:
 
 ---
 
-# 🏗️ Complete System Architecture
+## 🏗️ Complete System Architecture
 
 ```text
                            ┌─────────────────────┐
@@ -390,7 +390,7 @@ The Copilot:
 
 ---
 
-# 🔄 End-to-End Transaction Flow
+## 🔄 End-to-End Transaction Flow
 
 ```text
 1. Transaction enters RiskShield
@@ -437,7 +437,7 @@ The Copilot:
 
 ---
 
-# 🧠 AI Architecture
+## 🧠 AI Architecture
 
 ```text
                  FINANCIAL DATA
@@ -471,7 +471,7 @@ The Copilot:
 
 ---
 
-# 🧩 Risk Engine
+## 🧩 Risk Engine
 
 The Risk Engine is the **authoritative fraud-risk detection component**.
 
@@ -514,7 +514,7 @@ The Risk Engine is the **authoritative fraud-risk detection component**.
 
 ---
 
-# 📚 Data Layer
+## 📚 Data Layer
 
 RiskShield can operate using banking and financial datasets for:
 
@@ -548,7 +548,7 @@ Synthetic financial records can be used to reproduce transaction patterns withou
 
 ---
 
-# 🛡️ Fraud & Risk Intelligence
+## 🛡️ Fraud & Risk Intelligence
 
 RiskShield can combine multiple signals:
 
@@ -579,7 +579,7 @@ COMPREHENSIVE RISK ASSESSMENT
 
 ---
 
-# 💻 Technology Stack
+## 💻 Technology Stack
 
 ## Frontend
 
@@ -664,7 +664,7 @@ POST /api/copilot/investigate
 
 ---
 
-# 🔄 Copilot Request Flow
+## 🔄 Copilot Request Flow
 
 ```text
 Analyst
@@ -709,7 +709,7 @@ Analyst
 
 ---
 
-# 🖥️ Local Application Architecture
+## 🖥️ Local Application Architecture
 
 RiskShield preserves the existing local application workflow.
 
@@ -760,7 +760,7 @@ The core RiskShield platform continues functioning.
 
 ---
 
-# 🐳 Docker Architecture
+## 🐳 Docker Architecture
 
 ```text
                     Docker Compose
@@ -781,7 +781,7 @@ For production, Ollama can also run directly on the host while Frontend and Back
 
 ---
 
-# ☁️ Production VPS Architecture
+## ☁️ Production VPS Architecture
 
 ```text
                          INTERNET
@@ -822,7 +822,7 @@ Ubuntu VPS
 
 ---
 
-# 🚀 Deployment
+## 🚀 Deployment
 
 ## 1. Clone Repository
 
@@ -884,7 +884,7 @@ Then verify:
 
 ---
 
-# 🔐 Security Architecture
+## 🔐 Security Architecture
 
 RiskShield follows a defense-in-depth approach.
 
@@ -922,7 +922,7 @@ RiskShield follows a defense-in-depth approach.
 
 ---
 
-# 📁 Project Structure
+## 📁 Project Structure
 
 ```text
 RiskShield/
@@ -983,7 +983,7 @@ RiskShield/
 
 ---
 
-# 🔄 Four Supported Execution Modes
+## 🔄 Four Supported Execution Modes
 
 RiskShield supports four coexisting deployment modes.
 
@@ -1061,7 +1061,7 @@ Zephyr 7B
 
 ---
 
-# ⚡ Performance Considerations
+## ⚡ Performance Considerations
 
 Zephyr 7B inference performance depends on:
 
@@ -1078,7 +1078,7 @@ The Risk Engine and Copilot remain logically separated so slow LLM inference doe
 
 ---
 
-# 📈 Scalability
+## 📈 Scalability
 
 ```text
 Frontend
@@ -1117,7 +1117,7 @@ Possible future scaling architecture:
 
 ---
 
-# 🧪 Testing Strategy
+## 🧪 Testing Strategy
 
 ## Risk Engine
 
@@ -1174,7 +1174,7 @@ docker compose up
 
 ---
 
-# 🩺 Health Monitoring
+## 🩺 Health Monitoring
 
 Example:
 
@@ -1199,7 +1199,7 @@ The core fraud-risk detection system continues functioning independently.
 
 ---
 
-# 🛠️ Troubleshooting
+## 🛠️ Troubleshooting
 
 ### Check Ollama
 
@@ -1234,7 +1234,7 @@ docker compose logs -f
 
 ---
 
-# 🎯 Primary Use Case
+## 🎯 Primary Use Case
 
 ## Financial Fraud Detection
 
@@ -1268,7 +1268,7 @@ Defensive Action
 
 ---
 
-# 🏆 Hackathon Track Alignment
+## 🏆 Hackathon Track Alignment
 
 RiskShield directly aligns with an **AI Risk Manager** objective focused on reducing merchant losses caused by fraudulent transactions.
 
@@ -1319,7 +1319,7 @@ RiskShield directly aligns with an **AI Risk Manager** objective focused on redu
 
 ---
 
-# 🔮 Future Scope
+## 🔮 Future Scope
 
 * Advanced behavioral profiling
 * Real-time transaction streams
@@ -1341,7 +1341,7 @@ RiskShield directly aligns with an **AI Risk Manager** objective focused on redu
 
 ---
 
-# 🌟 Project Highlights
+## 🌟 Project Highlights
 
 ```text
 ┌──────────────────────────────────────────────┐
@@ -1366,7 +1366,7 @@ RiskShield directly aligns with an **AI Risk Manager** objective focused on redu
 
 ---
 
-# 📌 Project Status
+## 📌 Project Status
 
 | Component                | Status                                                  |
 | ------------------------ | ------------------------------------------------------- |
@@ -1382,7 +1382,7 @@ RiskShield directly aligns with an **AI Risk Manager** objective focused on redu
 
 ---
 
-# 👨‍💻 Contributing
+## 👨‍💻 Contributing
 
 ```bash
 git clone <repository-url>
@@ -1406,7 +1406,7 @@ Create a pull request describing:
 
 ---
 
-# ⚠️ Disclaimer
+## ⚠️ Disclaimer
 
 RiskShield AI is an analytical and decision-support system.
 
@@ -1416,7 +1416,7 @@ The AI Copilot provides assistance based on evidence supplied by the RiskShield 
 
 ---
 
-# 🧰 Technology Summary
+## 🧰 Technology Summary
 
 | Layer           | Technology                               |
 | --------------- | ---------------------------------------- |
@@ -1439,7 +1439,7 @@ The AI Copilot provides assistance based on evidence supplied by the RiskShield 
 
 ---
 
-# 🛡️ RiskShield AI
+## 🛡️ RiskShield AI
 
 ### **Detect. Explain. Investigate. Decide.**
 
