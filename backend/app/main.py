@@ -217,6 +217,13 @@ async def train_model(dataset_selection: DatasetSelection, model_name: str = Que
         model = app_state["models"].models[model_name].artifact.model
         app_state["shap_explainer"] = SHAPExplainer(model, features)
         app_state["shap_explainer"].fit(X_train)
+        
+    # Build the transaction graph network from the dataset so Graph Risk populates
+    try:
+        app_state["transaction_graph"].build_from_transactions(df.to_dict("records"))
+    except Exception as e:
+        print(f"Graph build failed: {e}")
+
     return {"status": "success", "model": model_name, "metrics": metrics}
 
 
