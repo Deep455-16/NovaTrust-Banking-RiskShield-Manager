@@ -29,8 +29,10 @@ class TransactionPreprocessor:
         df["step_delta"] = df.groupby("customer_id")["step"].diff().fillna(0)
         df["merchant_occurrences"] = df.groupby(["customer_id", "merchant_id"]).cumcount().fillna(0).astype(int)
         df["is_first_time_pair"] = (df["merchant_occurrences"] == 0).astype(int)
-        df["unique_merchants_count"] = df.groupby("customer_id")["merchant_id"].transform(
-            lambda x: x.shift(1).rolling(24, min_periods=1).apply(lambda y: len(set(y)), raw=False)
+        # Convert merchant_id to numeric codes for rolling unique count to prevent pandas string conversion errors
+        merchant_codes = pd.Series(pd.factorize(df["merchant_id"])[0], index=df.index)
+        df["unique_merchants_count"] = merchant_codes.groupby(df["customer_id"]).transform(
+            lambda x: x.shift(1).rolling(24, min_periods=1).apply(lambda y: len(np.unique(y)), raw=True)
         ).fillna(0)
         df["is_night"] = ((df["step"] % 24 < 6) | (df["step"] % 24 > 22)).astype(int)
         df["transaction_velocity"] = np.where(df["step_delta"] > 0, df["amount"] / df["step_delta"], 0)
