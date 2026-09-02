@@ -238,19 +238,48 @@ async def compare_models(current_user: User = Depends(get_current_user)):
 @app.post("/api/v1/risk/score")
 async def score_transaction(transaction: Dict[str, Any], current_user: User = Depends(get_current_user)):
     try:
-        # Extract raw risk signals BEFORE preprocessing (preprocessor strips custom fields)
+        amount = float(transaction.get("amount", 0) or 0)
+
+        # ── Amount-based deviation: compute from the actual amount field ──
+        # Baseline "normal" transaction is ~$300. Anything higher contributes deviation.
+        BASELINE_AMOUNT = 300.0
+        computed_amount_deviation = max(0.0, amount - BASELINE_AMOUNT)
+
+        # User can still override with explicit amount_deviation field if provided
+        raw_amount_dev = float(transaction.get("amount_deviation", None) or computed_amount_deviation)
         raw_velocity = float(transaction.get("transaction_velocity", 0) or 0)
-        raw_amount_dev = float(transaction.get("amount_deviation", 0) or 0)
         raw_is_first_time = bool(transaction.get("is_first_time_pair", False))
         raw_patterns = list(transaction.get("suspicious_patterns", []) or [])
 
-        # Inject safe defaults so preprocessor never crashes on missing timestamp / columns
+        # ── Rule-based fraud probability from amount (always responsive) ──
+        if amount < 100:
+            rule_fraud_prob = 0.05
+        elif amount < 500:
+            rule_fraud_prob = 0.15
+        elif amount < 1000:
+            rule_fraud_prob = 0.32
+        elif amount < 3000:
+            rule_fraud_prob = 0.55
+        elif amount < 7000:
+            rule_fraud_prob = 0.72
+        elif amount < 15000:
+            rule_fraud_prob = 0.85
+        else:
+            rule_fraud_prob = 0.95
+
+        # Boost for first-time pairs and known suspicious patterns
+        if raw_is_first_time:
+            rule_fraud_prob = min(rule_fraud_prob + 0.10, 1.0)
+        if len(raw_patterns) > 0:
+            rule_fraud_prob = min(rule_fraud_prob + 0.05 * len(raw_patterns), 1.0)
+
+        # ── Try ML model — use rule-based as fallback if unavailable ──
         safe_txn = {
             "transaction_id": transaction.get("transaction_id", "manual-001"),
             "timestamp": transaction.get("timestamp", pd.Timestamp.now().isoformat()),
             "customer_id": str(transaction.get("customer_id", "C0000")),
             "merchant_id": str(transaction.get("merchant_id", "M0000")),
-            "amount": float(transaction.get("amount", 0) or 0),
+            "amount": amount,
             "category": str(transaction.get("category", "UNKNOWN")),
             "step": int(transaction.get("step", 0) or 0),
             "fraud_label": int(transaction.get("fraud_label", 0) or 0),
@@ -259,22 +288,25 @@ async def score_transaction(transaction: Dict[str, Any], current_user: User = De
             "customer_gender": str(transaction.get("customer_gender", "UNKNOWN")),
         }
 
-        fraud_prob = 0.0
+        fraud_prob = rule_fraud_prob   # default to rule-based
         anomaly_score = 0.0
         X = None
+        ml_used = False
         try:
             df = pd.DataFrame([safe_txn])
             processed_df, _ = app_state["preprocessor"].prepare_features(df, fit=False)
             X = app_state["preprocessor"].get_feature_matrix(processed_df)
             if X is not None and len(X) > 0:
                 if "weighted_lightgbm" in app_state["models"].models:
-                    fraud_prob = float(app_state["models"].predict("weighted_lightgbm", X)[0])
+                    ml_prob = float(app_state["models"].predict("weighted_lightgbm", X)[0])
+                    if ml_prob > 0:          # only use ML result if it's non-zero
+                        fraud_prob = ml_prob
+                        ml_used = True
                 if app_state["anomaly_detector"].fitted:
                     anomaly_score = float(app_state["anomaly_detector"].predict(X)[0])
         except Exception as model_err:
-            print(f"ML scoring skipped (model not ready): {model_err}")
+            print(f"ML scoring skipped (using rule-based): {model_err}")
 
-        # Combine ML output with raw manual payload fields for the risk engine
         signals = RiskSignals(
             fraud_probability=fraud_prob,
             anomaly_score=anomaly_score,
@@ -293,6 +325,7 @@ async def score_transaction(transaction: Dict[str, Any], current_user: User = De
                 shap_factors = app_state["shap_explainer"].explain(X[0])
         except Exception:
             pass
+
         return {
             "transaction_id": transaction.get("transaction_id"),
             "fraud_probability": round(fraud_prob, 4),
@@ -303,7 +336,8 @@ async def score_transaction(transaction: Dict[str, Any], current_user: User = De
             "decision": policy_result["decision"],
             "policy_name": policy_result["policy_name"],
             "shap_explanation": shap_factors,
-            "component_scores": risk_result["component_scores"]
+            "component_scores": risk_result["component_scores"],
+            "scoring_mode": "ml" if ml_used else "rule_based"
         }
     except Exception as e:
         return {"error": str(e)}
