@@ -1,39 +1,39 @@
-  # 🛡️ RiskShield AI
+  <div align="center">
 
-### AI-Powered Fraud-Risk Detection, Financial Intelligence & Investigation Copilot
+🛡️ RiskShield AI
 
-> **RiskShield AI** is an AI-powered financial fraud-risk platform that detects suspicious transactions using machine learning, behavioral signals, anomaly detection, and risk rules — then uses an evidence-grounded AI Copilot to explain the risk, assist investigations, and recommend what analysts should examine next.
+AI-Powered Fraud-Risk Detection, Financial Intelligence & Investigation Copilot
 
-<p align="center">
+Detect → Explain → Investigate → Decide
 
-**Detect → Explain → Investigate → Decide**
+</div>
 
-</p>
 
----
 
-## 🎯 Problem
+RiskShield AI is an AI-powered financial fraud-risk platform that detects suspicious transactions using machine learning, behavioral signals, anomaly detection, and risk rules — then uses an evidence-grounded AI Copilot to explain the risk, assist investigations, and recommend what analysts should examine next.
+
+Detect → Explain → Investigate → Decide
+
+🎯 Problem
 
 Financial fraud creates direct losses for merchants, banks, fintech platforms, and payment ecosystems.
 
 Traditional systems often face two problems:
 
-* 🚨 Suspicious transactions need to be detected quickly.
-* 🔎 Analysts need to understand **why** a transaction was flagged.
+🚨 Suspicious transactions need to be detected quickly.
 
-RiskShield addresses both problems by separating **fraud detection** from **AI-assisted investigation**.
+🔎 Analysts need to understand why a transaction was flagged.
+
+RiskShield addresses both problems by separating fraud detection from AI-assisted investigation.
 
 The core Risk Engine makes the risk assessment.
 
 The AI Copilot helps the analyst understand and investigate that assessment.
 
----
-
-# 💡 Solution
+💡 Solution
 
 RiskShield is built around a simple architecture:
 
-```text
                          TRANSACTION
                               │
                               ▼
@@ -76,40 +76,48 @@ RiskShield is built around a simple architecture:
                                           │
                                           ▼
                                   FINAL DECISION
-```
 
-### Core principle
 
-> **The Risk Engine detects. The AI Copilot explains. The analyst decides.**
+Core principle
 
-Zephyr is **not** the authoritative fraud detector and cannot override the Risk Engine.
+The Risk Engine detects. The AI Copilot explains. The analyst decides.
 
----
+Zephyr is not the authoritative fraud detector and cannot override the Risk Engine.
 
-# 🚀 Key Features
+🚀 Key Features
 
-## 🔍 1. AI-Powered Fraud-Risk Detection
+🔍 1. AI-Powered Fraud-Risk Detection
 
 RiskShield analyzes financial transactions using multiple complementary signals:
 
-* Machine-learning predictions
-* Transaction risk scoring
-* Fraud probability estimation
-* Rule-based risk detection
-* Behavioral indicators
-* Anomaly detection
-* Transaction velocity
-* Historical activity
-* Device signals
-* Geographic signals
-* Transaction timing
-* Amount-based anomalies
+Machine-learning predictions
+
+Transaction risk scoring
+
+Fraud probability estimation
+
+Rule-based risk detection
+
+Behavioral indicators
+
+Anomaly detection
+
+Transaction velocity
+
+Historical activity
+
+Device signals
+
+Geographic signals
+
+Transaction timing
+
+Amount-based anomalies
 
 The result is a structured risk assessment.
 
 Example:
 
-```text
 Risk Score:        87 / 100
 Risk Level:        HIGH
 Fraud Probability: 87%
@@ -126,15 +134,12 @@ Triggered Rules:
 
 Recommended Action:
 • STEP-UP AUTHENTICATION
-```
 
----
 
-# 🧠 2. AI Investigation Copilot
+🧠 2. AI Investigation Copilot
 
 RiskShield includes an optional AI Copilot powered by:
 
-```text
 HuggingFaceH4/zephyr-7b-beta
               │
               ▼
@@ -142,13 +147,12 @@ HuggingFaceH4/zephyr-7b-beta
               │
               ▼
       RiskShield Copilot
-```
+
 
 The Copilot converts structured Risk Engine evidence into natural-language investigation assistance.
 
-### Example questions
+Example questions
 
-```text
 Why is this transaction high risk?
 
 What are the strongest risk indicators?
@@ -162,21 +166,17 @@ Summarize this transaction.
 Investigate this transaction.
 
 What evidence supports this risk score?
-```
 
----
 
-# 🔎 3. Explainable Risk Analysis
+🔎 3. Explainable Risk Analysis
 
 RiskShield does not simply return:
 
-```text
 HIGH RISK
-```
+
 
 Instead, it provides the evidence behind the assessment.
 
-```text
 Transaction
      │
      ▼
@@ -188,38 +188,58 @@ Risk Score
      ├── Anomalies
      ├── Triggered Rules
      └── Recommended Action
-```
+
 
 This makes the system more useful for human analysts and investigation workflows.
 
----
-
-# 📊 4. Risk Evidence Generation
+📊 4. Risk Evidence Generation
 
 Every analyzed transaction can produce structured evidence containing:
 
-| Evidence             | Description                            |
-| -------------------- | -------------------------------------- |
-| Risk Score           | Overall transaction risk score         |
-| Fraud Probability    | Estimated fraud likelihood             |
-| Risk Level           | Low / Medium / High                    |
-| Risk Factors         | Signals contributing to the assessment |
-| Anomalies            | Detected behavioral abnormalities      |
-| Triggered Rules      | Rules responsible for risk signals     |
-| Transaction Features | Features used during analysis          |
-| Recommended Action   | Suggested defensive response           |
+EvidenceDescription
 
----
 
-# 📈 5. Fraud Detection Evaluation
 
-RiskShield is designed around **measurable fraud detection performance**, rather than relying only on qualitative demonstrations.
+Risk Score
 
-The fraud detector should be evaluated using a **held-out test set** that is not used for model training or tuning.
+Overall transaction risk score
 
-### Evaluation Metrics
+Fraud Probability
 
-```text
+Estimated fraud likelihood
+
+Risk Level
+
+Low / Medium / High
+
+Risk Factors
+
+Signals contributing to the assessment
+
+Anomalies
+
+Detected behavioral abnormalities
+
+Triggered Rules
+
+Rules responsible for risk signals
+
+Transaction Features
+
+Features used during analysis
+
+Recommended Action
+
+Suggested defensive response
+
+📈 5. Fraud Detection Evaluation
+
+RiskShield is designed around measurable fraud detection performance, rather than relying only on qualitative demonstrations.
+
+The fraud detector should be evaluated using a held-out test set that is not used for model training or tuning.
+
+Evaluation Metrics
+
                  HELD-OUT TEST SET
                          │
                          ▼
@@ -241,56 +261,59 @@ The fraud detector should be evaluated using a **held-out test set** that is not
                         │
                         ▼
                  False Positive Cost
-```
 
-### Metrics
 
-* **Precision** — proportion of flagged transactions that are actually fraudulent.
-* **Recall** — proportion of fraudulent transactions successfully detected.
-* **F1 Score** — balance between precision and recall.
-* **False Positive Rate** — proportion of legitimate transactions incorrectly flagged.
-* **False Positive Cost** — estimated business cost associated with legitimate transactions being incorrectly flagged.
+Metrics
 
-### False Positive Cost
+Precision — proportion of flagged transactions that are actually fraudulent.
+
+Recall — proportion of fraudulent transactions successfully detected.
+
+F1 Score — balance between precision and recall.
+
+False Positive Rate — proportion of legitimate transactions incorrectly flagged.
+
+False Positive Cost — estimated business cost associated with legitimate transactions being incorrectly flagged.
+
+False Positive Cost
 
 A configurable business-impact calculation can be represented as:
 
-```text
 False Positive Cost
 =
 False Positives
 ×
 Estimated Cost per False Positive
-```
+
 
 This helps measure not only detection capability but also the operational impact of incorrectly flagging legitimate customers.
 
-> **Important:** Evaluation numbers should represent actual experiments performed on the held-out dataset. RiskShield does not claim fabricated benchmark results.
+Important: Evaluation numbers should represent actual experiments performed on the held-out dataset. RiskShield does not claim fabricated benchmark results.
 
----
+🛡️ 6. Defense-First Architecture
 
-# 🛡️ 6. Defense-First Architecture
-
-RiskShield is designed as a **defensive financial-security system**.
+RiskShield is designed as a defensive financial-security system.
 
 Its purpose is to:
 
-* Detect suspicious activity
-* Identify fraud-risk signals
-* Assist financial investigations
-* Explain risk decisions
-* Reduce financial losses
-* Support analysts
+Detect suspicious activity
+
+Identify fraud-risk signals
+
+Assist financial investigations
+
+Explain risk decisions
+
+Reduce financial losses
+
+Support analysts
 
 The system does not provide offensive capabilities.
 
----
-
-# 🤖 AI Safety Architecture
+🤖 AI Safety Architecture
 
 Zephyr 7B is deliberately separated from the authoritative risk decision.
 
-```text
                          TRANSACTION
                               │
                               ▼
@@ -311,34 +334,42 @@ Zephyr 7B is deliberately separated from the authoritative risk decision.
                               │
                               ▼
                            ANALYST
-```
 
-### Copilot restrictions
 
-The Copilot:
-
-* ❌ Cannot modify the risk score
-* ❌ Cannot override the Risk Engine
-* ❌ Cannot invent transaction information
-* ❌ Cannot fabricate evidence
-* ❌ Cannot arbitrarily execute SQL
-* ❌ Cannot access application secrets
-* ❌ Cannot independently approve or reject transactions
+Copilot restrictions
 
 The Copilot:
 
-* ✅ Receives structured evidence
-* ✅ Explains observed signals
-* ✅ Assists investigations
-* ✅ Provides evidence-based recommendations
-* ✅ States when information is unavailable
-* ✅ Keeps the human analyst in the decision loop
+❌ Cannot modify the risk score
 
----
+❌ Cannot override the Risk Engine
 
-# 🏗️ Complete System Architecture
+❌ Cannot invent transaction information
 
-```text
+❌ Cannot fabricate evidence
+
+❌ Cannot arbitrarily execute SQL
+
+❌ Cannot access application secrets
+
+❌ Cannot independently approve or reject transactions
+
+The Copilot:
+
+✅ Receives structured evidence
+
+✅ Explains observed signals
+
+✅ Assists investigations
+
+✅ Provides evidence-based recommendations
+
+✅ States when information is unavailable
+
+✅ Keeps the human analyst in the decision loop
+
+🏗️ Complete System Architecture
+
                            ┌─────────────────────┐
                            │       ANALYST       │
                            └──────────┬──────────┘
@@ -384,13 +415,10 @@ The Copilot:
         └──────────────┘                             ┌──────────────┐
                                                      │  Zephyr 7B   │
                                                      └──────────────┘
-```
 
----
 
-# 🔄 End-to-End Transaction Flow
+🔄 End-to-End Transaction Flow
 
-```text
 1. Transaction enters RiskShield
               │
               ▼
@@ -431,13 +459,10 @@ The Copilot:
               │
               ▼
 14. Analyst makes final decision
-```
 
----
 
-# 🧠 AI Architecture
+🧠 AI Architecture
 
-```text
                  FINANCIAL DATA
                        │
                        ▼
@@ -465,29 +490,34 @@ The Copilot:
                        │
                        ▼
                 Analyst Response
-```
 
----
 
-# 🧩 Risk Engine
+🧩 Risk Engine
 
-The Risk Engine is the **authoritative fraud-risk detection component**.
+The Risk Engine is the authoritative fraud-risk detection component.
 
-### Responsibilities
+Responsibilities
 
-* Transaction preprocessing
-* Feature engineering
-* Fraud-risk scoring
-* Fraud probability estimation
-* Rule evaluation
-* Anomaly identification
-* Behavioral analysis
-* Risk classification
-* Evidence generation
+Transaction preprocessing
 
-### Example Risk Output
+Feature engineering
 
-```json
+Fraud-risk scoring
+
+Fraud probability estimation
+
+Rule evaluation
+
+Anomaly identification
+
+Behavioral analysis
+
+Risk classification
+
+Evidence generation
+
+Example Risk Output
+
 {
   "transaction_id": "TX-102",
   "risk_score": 87,
@@ -508,24 +538,26 @@ The Risk Engine is the **authoritative fraud-risk detection component**.
     "RULE_NEW_DEVICE"
   ]
 }
-```
 
----
 
-# 📚 Data Layer
+📚 Data Layer
 
 RiskShield can operate using banking and financial datasets for:
 
-* Model development
-* Testing
-* Evaluation
-* Demonstration
-* Edge-case generation
-* Experimentation
+Model development
 
-### Supported data sources
+Testing
 
-```text
+Evaluation
+
+Demonstration
+
+Edge-case generation
+
+Experimentation
+
+Supported data sources
+
 Fraud Transaction Data
         │
 Banking Transaction Data
@@ -538,19 +570,16 @@ Historical Risk Cases
         │
         ▼
     RiskShield
-```
 
-### Synthetic Data
+
+Synthetic Data
 
 Synthetic financial records can be used to reproduce transaction patterns without exposing actual customer information.
 
----
-
-# 🛡️ Fraud & Risk Intelligence
+🛡️ Fraud & Risk Intelligence
 
 RiskShield can combine multiple signals:
 
-```text
 Transaction Amount
         │
 Transaction Frequency
@@ -573,98 +602,82 @@ Rule Violations
         │
         ▼
 COMPREHENSIVE RISK ASSESSMENT
-```
 
----
 
-# 💻 Technology Stack
+💻 Technology Stack
 
-## Frontend
+Frontend
 
-```text
 Next.js
 React
 JavaScript / TypeScript
 Tailwind CSS
 HTML5
 CSS3
-```
 
-## Backend
 
-```text
+Backend
+
 Python
 FastAPI / Existing Python Backend Architecture
 Uvicorn / Gunicorn
 REST APIs
-```
 
-## Risk Intelligence
 
-```text
+Risk Intelligence
+
 Machine Learning
 Feature Engineering
 Rule-Based Detection
 Anomaly Detection
 Fraud-Risk Scoring
-```
 
-## AI Copilot
 
-```text
+AI Copilot
+
 HuggingFaceH4/zephyr-7b-beta
             ↓
          Ollama
             ↓
     RiskShield Copilot
-```
 
-## Infrastructure
 
-```text
+Infrastructure
+
 Docker
 Docker Compose
 Nginx
 Ubuntu VPS
 HTTPS
 Git
-```
 
----
 
-# 🔌 API Architecture
+🔌 API Architecture
 
-### Health
+Health
 
-```http
 GET /api/health
-```
 
-### Copilot Health
 
-```http
+Copilot Health
+
 GET /api/copilot/health
-```
 
-### Copilot Chat
 
-```http
+Copilot Chat
+
 POST /api/copilot/chat
-```
 
-### Investigation
 
-```http
+Investigation
+
 POST /api/copilot/investigate
-```
 
-> Exact endpoints should follow the project's current API conventions.
 
----
+Exact endpoints should follow the project's current API conventions.
 
-# 🔄 Copilot Request Flow
+🔄 Copilot Request Flow
 
-```text
 Analyst
    │
    ▼
@@ -703,15 +716,12 @@ Frontend
    │
    ▼
 Analyst
-```
 
----
 
-# 🖥️ Local Application Architecture
+🖥️ Local Application Architecture
 
 RiskShield preserves the existing local application workflow.
 
-```text
                  EXISTING EXE
                       │
                       ▼
@@ -729,38 +739,40 @@ RiskShield preserves the existing local application workflow.
                               │
                               ▼
                          Risk Engine
-```
 
-### Existing workflow
 
-* Existing `.exe` launchers remain preserved.
-* Existing startup scripts remain preserved.
-* Existing risk engine remains preserved.
-* Existing datasets remain preserved.
-* Existing APIs remain preserved.
-* Existing ports remain preserved.
-* Existing application continues to work without the AI Copilot.
+Existing workflow
 
-### Optional AI
+Existing .exe launchers remain preserved.
 
-The Zephyr/Ollama layer is an **optional capability**.
+Existing startup scripts remain preserved.
+
+Existing risk engine remains preserved.
+
+Existing datasets remain preserved.
+
+Existing APIs remain preserved.
+
+Existing ports remain preserved.
+
+Existing application continues to work without the AI Copilot.
+
+Optional AI
+
+The Zephyr/Ollama layer is an optional capability.
 
 If Ollama is unavailable:
 
-```text
 Backend       → HEALTHY
 Risk Engine   → HEALTHY
 Ollama        → UNAVAILABLE
 Copilot       → UNAVAILABLE
-```
+
 
 The core RiskShield platform continues functioning.
 
----
+🐳 Docker Architecture
 
-# 🐳 Docker Architecture
-
-```text
                     Docker Compose
                          │
               ┌──────────┴──────────┐
@@ -773,15 +785,12 @@ The core RiskShield platform continues functioning.
                                     │
                                     ▼
                                 Zephyr 7B
-```
+
 
 For production, Ollama can also run directly on the host while Frontend and Backend run inside Docker.
 
----
+☁️ Production VPS Architecture
 
-# ☁️ Production VPS Architecture
-
-```text
                          INTERNET
                             │
                             ▼
@@ -799,11 +808,10 @@ For production, Ollama can also run directly on the host while Frontend and Back
                                          │
                                          ▼
                                      ZEPHYR 7B
-```
 
-### Production Components
 
-```text
+Production Components
+
 Ubuntu VPS
 │
 ├── Nginx
@@ -814,79 +822,65 @@ Ubuntu VPS
 │
 └── Ollama
     └── Zephyr 7B
-```
 
-> Ollama's port `11434` should **never be exposed publicly**.
 
----
+Ollama's port 11434 should never be exposed publicly.
 
-# 🚀 Deployment
+🚀 Deployment
 
-## 1. Clone Repository
+1. Clone Repository
 
-```bash
 git clone <repository-url>
 cd riskshield-ai
-```
 
-## 2. Configure Environment
+
+2. Configure Environment
 
 Create:
 
-```text
 .env
-```
+
 
 based on:
 
-```text
 .env.example
-```
 
-## 3. Install Ollama
 
-```bash
+3. Install Ollama
+
 curl -fsSL https://ollama.com/install.sh | sh
-```
 
-## 4. Download Zephyr
 
-```bash
+4. Download Zephyr
+
 ollama pull zephyr:7b-beta
-```
 
-## 5. Build Containers
 
-```bash
+5. Build Containers
+
 docker compose build
-```
 
-## 6. Start RiskShield
 
-```bash
+6. Start RiskShield
+
 docker compose up -d
-```
 
-## 7. Verify
 
-```bash
+7. Verify
+
 docker compose ps
-```
+
 
 Then verify:
 
-```text
 /api/health
 /api/copilot/health
-```
 
----
 
-# 🔐 Security Architecture
+🔐 Security Architecture
 
 RiskShield follows a defense-in-depth approach.
 
-```text
                      USER
                        │
                        ▼
@@ -901,28 +895,36 @@ RiskShield follows a defense-in-depth approach.
                                 │
                                 ▼
                               Ollama
-```
 
-### Security Controls
 
-* Environment-based secrets
-* HTTPS
-* Restricted CORS
-* Backend input validation
-* Controlled backend tools
-* No arbitrary SQL execution by the LLM
-* No public Ollama endpoint
-* No credentials in frontend
-* No secrets committed to Git
-* Safe error handling
-* Request validation
-* Optional authentication integration
+Security Controls
 
----
+Environment-based secrets
 
-# 📁 Project Structure
+HTTPS
 
-```text
+Restricted CORS
+
+Backend input validation
+
+Controlled backend tools
+
+No arbitrary SQL execution by the LLM
+
+No public Ollama endpoint
+
+No credentials in frontend
+
+No secrets committed to Git
+
+Safe error handling
+
+Request validation
+
+Optional authentication integration
+
+📁 Project Structure
+
 RiskShield/
 │
 ├── backend/
@@ -962,46 +964,63 @@ RiskShield/
 ├── .gitignore
 ├── DEPLOYMENT.md
 └── README.md
-```
 
----
 
-# ⚙️ Configuration
+⚙️ Configuration
 
-| Variable          | Purpose                                                     |
-| ----------------- | ----------------------------------------------------------- |
-| `APP_ENV`         | Application environment                                     |
-| `BACKEND_HOST`    | Backend bind address                                        |
-| `BACKEND_PORT`    | Backend port                                                |
-| `OLLAMA_BASE_URL` | Ollama server address                                       |
-| `OLLAMA_MODEL`    | AI model                                                    |
-| `CORS_ORIGINS`    | Allowed frontend origins                                    |
-| `SECRET_KEY`      | Application security secret                                 |
-| `DATABASE_URL`    | Database connection if supported by the existing deployment |
+VariablePurpose
 
----
 
-# 🔄 Four Supported Execution Modes
+
+APP_ENV
+
+Application environment
+
+BACKEND_HOST
+
+Backend bind address
+
+BACKEND_PORT
+
+Backend port
+
+OLLAMA_BASE_URL
+
+Ollama server address
+
+OLLAMA_MODEL
+
+AI model
+
+CORS_ORIGINS
+
+Allowed frontend origins
+
+SECRET_KEY
+
+Application security secret
+
+DATABASE_URL
+
+Database connection if supported by the existing deployment
+
+🔄 Four Supported Execution Modes
 
 RiskShield supports four coexisting deployment modes.
 
-## Mode 1 — Existing Local Application
+Mode 1 — Existing Local Application
 
-```text
 Existing EXE
      ↓
 RiskShield
      ↓
 Risk Engine
-```
+
 
 The existing application remains the primary local workflow.
 
----
+Mode 2 — Local AI Copilot
 
-## Mode 2 — Local AI Copilot
-
-```text
 RiskShield
     │
     ▼
@@ -1012,15 +1031,12 @@ Ollama
     │
     ▼
 Zephyr 7B
-```
+
 
 The Copilot runs locally and can operate without sending transaction context to an external LLM service.
 
----
+Mode 3 — Docker
 
-## Mode 3 — Docker
-
-```text
 Docker Compose
       │
  ┌────┴────┐
@@ -1032,13 +1048,10 @@ Frontend  Backend
              │
              ▼
           Zephyr 7B
-```
 
----
 
-## Mode 4 — Production VPS
+Mode 4 — Production VPS
 
-```text
 Internet
    │
    ▼
@@ -1055,30 +1068,32 @@ Host Ollama
    │
    ▼
 Zephyr 7B
-```
 
----
 
-# ⚡ Performance Considerations
+⚡ Performance Considerations
 
 Zephyr 7B inference performance depends on:
 
-* CPU
-* Available RAM
-* GPU
-* GPU VRAM
-* Quantization
-* Concurrent requests
-* Context size
-* Transaction workload
+CPU
+
+Available RAM
+
+GPU
+
+GPU VRAM
+
+Quantization
+
+Concurrent requests
+
+Context size
+
+Transaction workload
 
 The Risk Engine and Copilot remain logically separated so slow LLM inference does not block core risk analysis.
 
----
+📈 Scalability
 
-# 📈 Scalability
-
-```text
 Frontend
     │
     ▼
@@ -1092,13 +1107,12 @@ Backend API
             │
             ▼
           Ollama
-```
+
 
 Each component can be scaled or replaced independently.
 
 Possible future scaling architecture:
 
-```text
                  Load Balancer
                        │
              ┌─────────┼─────────┐
@@ -1111,134 +1125,138 @@ Possible future scaling architecture:
                        │
                        ▼
                 AI Inference Layer
-```
 
----
 
-# 🧪 Testing Strategy
+🧪 Testing Strategy
 
-## Risk Engine
+Risk Engine
 
 Test:
 
-* Transaction processing
-* Feature extraction
-* Risk scoring
-* Fraud probability
-* Rule evaluation
-* Anomaly detection
+Transaction processing
 
-## Fraud Detector Evaluation
+Feature extraction
+
+Risk scoring
+
+Fraud probability
+
+Rule evaluation
+
+Anomaly detection
+
+Fraud Detector Evaluation
 
 Test using a held-out dataset:
 
-* Precision
-* Recall
-* F1
-* False Positive Rate
-* False Positive Cost
+Precision
 
-## Copilot
+Recall
 
-Test:
+F1
 
-* Valid transaction questions
-* Missing evidence
-* Invalid transaction IDs
-* Ollama unavailable
-* Zephyr unavailable
-* Timeout handling
-* Large context handling
-* Unsupported questions
+False Positive Rate
 
-## Security
+False Positive Cost
+
+Copilot
 
 Test:
 
-* Secret isolation
-* Input validation
-* CORS
-* Arbitrary SQL prevention
-* Prompt injection resistance
-* LLM tool restrictions
+Valid transaction questions
 
-## Deployment
+Missing evidence
 
-```bash
+Invalid transaction IDs
+
+Ollama unavailable
+
+Zephyr unavailable
+
+Timeout handling
+
+Large context handling
+
+Unsupported questions
+
+Security
+
+Test:
+
+Secret isolation
+
+Input validation
+
+CORS
+
+Arbitrary SQL prevention
+
+Prompt injection resistance
+
+LLM tool restrictions
+
+Deployment
+
 docker compose config
 docker compose build
 docker compose up
-```
 
----
 
-# 🩺 Health Monitoring
+🩺 Health Monitoring
 
 Example:
 
-```text
 Backend       → HEALTHY
 Risk Engine   → HEALTHY
 Ollama        → HEALTHY
 Zephyr 7B    → AVAILABLE
 Copilot       → AVAILABLE
-```
+
 
 If Ollama fails:
 
-```text
 Backend       → HEALTHY
 Risk Engine   → HEALTHY
 Ollama        → UNAVAILABLE
 Copilot       → UNAVAILABLE
-```
+
 
 The core fraud-risk detection system continues functioning independently.
 
----
+🛠️ Troubleshooting
 
-# 🛠️ Troubleshooting
+Check Ollama
 
-### Check Ollama
-
-```bash
 ollama list
-```
 
-### Download Zephyr
 
-```bash
+Download Zephyr
+
 ollama pull zephyr:7b-beta
-```
 
-### Check Docker
 
-```bash
+Check Docker
+
 docker --version
 docker compose version
-```
 
-### Check services
 
-```bash
+Check services
+
 docker compose ps
-```
 
-### View logs
 
-```bash
+View logs
+
 docker compose logs -f
-```
 
----
 
-# 🎯 Primary Use Case
+🎯 Primary Use Case
 
-## Financial Fraud Detection
+Financial Fraud Detection
 
-RiskShield's primary objective is identifying **fraudulent and suspicious financial transactions**.
+RiskShield's primary objective is identifying fraudulent and suspicious financial transactions.
 
-```text
 Transaction
      ↓
 Risk Detection
@@ -1252,42 +1270,82 @@ Evidence
 Analyst Investigation
      ↓
 Defensive Action
-```
 
-### Additional use cases
 
-* Transaction Investigation
-* Analyst Assistance
-* Risk Explanation
-* Case Summarization
-* Suspicious Activity Investigation
-* Risk Operations
-* Financial Crime Analysis
+Additional use cases
 
----
+Transaction Investigation
 
-# 🏆 Hackathon Track Alignment
+Analyst Assistance
 
-RiskShield directly aligns with an **AI Risk Manager** objective focused on reducing merchant losses caused by fraudulent transactions.
+Risk Explanation
 
-| Track Requirement        | RiskShield                             |
-| ------------------------ | -------------------------------------- |
-| Working detector         | ✅ Fraud-Risk Detection Engine          |
-| One class of loss        | ✅ Fraudulent / suspicious transactions |
-| AI/ML component          | ✅ ML + anomaly detection + rules       |
-| Measurable performance   | ✅ Precision / Recall / F1              |
-| Held-out evaluation      | ✅ Required evaluation methodology      |
-| False-positive impact    | ✅ False Positive Cost                  |
-| Investigation assistance | ✅ Zephyr AI Copilot                    |
-| Human verification       | ✅ Human-in-the-loop                    |
-| Defense-focused          | ✅ Defensive fraud detection            |
-| Production deployment    | ✅ Docker / VPS                         |
-| Local execution          | ✅ Existing EXE workflow                |
-| Optional AI layer        | ✅ Ollama + Zephyr                      |
+Case Summarization
 
-### The core hackathon story
+Suspicious Activity Investigation
 
-```text
+Risk Operations
+
+Financial Crime Analysis
+
+🏆 Hackathon Track Alignment
+
+RiskShield directly aligns with an AI Risk Manager objective focused on reducing merchant losses caused by fraudulent transactions.
+
+Track RequirementRiskShield
+
+
+
+Working detector
+
+✅ Fraud-Risk Detection Engine
+
+One class of loss
+
+✅ Fraudulent / suspicious transactions
+
+AI/ML component
+
+✅ ML + anomaly detection + rules
+
+Measurable performance
+
+✅ Precision / Recall / F1
+
+Held-out evaluation
+
+✅ Required evaluation methodology
+
+False-positive impact
+
+✅ False Positive Cost
+
+Investigation assistance
+
+✅ Zephyr AI Copilot
+
+Human verification
+
+✅ Human-in-the-loop
+
+Defense-focused
+
+✅ Defensive fraud detection
+
+Production deployment
+
+✅ Docker / VPS
+
+Local execution
+
+✅ Existing EXE workflow
+
+Optional AI layer
+
+✅ Ollama + Zephyr
+
+The core hackathon story
+
                  FINANCIAL LOSS
                        │
                        ▼
@@ -1313,35 +1371,46 @@ RiskShield directly aligns with an **AI Risk Manager** objective focused on redu
                        │
                        ▼
               DEFENSIVE ACTION
-```
 
----
 
-# 🔮 Future Scope
+🔮 Future Scope
 
-* Advanced behavioral profiling
-* Real-time transaction streams
-* Graph-based fraud detection
-* Entity relationship analysis
-* Account takeover detection
-* Automated investigation workflows
-* Multi-agent investigation orchestration
-* Advanced RAG
-* Historical case retrieval
-* Analyst feedback loops
-* Model monitoring
-* Risk model drift detection
-* Distributed inference
-* GPU acceleration
-* Enterprise authentication
-* Audit trails
-* Advanced case management
+Advanced behavioral profiling
 
----
+Real-time transaction streams
 
-# 🌟 Project Highlights
+Graph-based fraud detection
 
-```text
+Entity relationship analysis
+
+Account takeover detection
+
+Automated investigation workflows
+
+Multi-agent investigation orchestration
+
+Advanced RAG
+
+Historical case retrieval
+
+Analyst feedback loops
+
+Model monitoring
+
+Risk model drift detection
+
+Distributed inference
+
+GPU acceleration
+
+Enterprise authentication
+
+Audit trails
+
+Advanced case management
+
+🌟 Project Highlights
+
 ┌──────────────────────────────────────────────┐
 │                RISKSHIELD AI                  │
 ├──────────────────────────────────────────────┤
@@ -1360,29 +1429,52 @@ RiskShield directly aligns with an **AI Risk Manager** objective focused on redu
 │  ⚡ Modular Architecture                    │
 │                                              │
 └──────────────────────────────────────────────┘
-```
 
----
 
-# 📌 Project Status
+📌 Project Status
 
-| Component                | Status                                                  |
-| ------------------------ | ------------------------------------------------------- |
-| Core Risk Management     | 🟢 Active                                               |
-| Fraud-Risk Detection     | 🟢 Active                                               |
-| Risk Evidence Generation | 🟢 Active                                               |
-| AI Copilot               | 🟢 Integrated                                           |
-| Local Ollama / Zephyr    | 🟢 Supported                                            |
-| Existing EXE Execution   | 🟢 Preserved                                            |
-| Docker                   | 🟢 Deployment Ready                                     |
-| VPS Deployment           | 🟢 Supported                                            |
-| Evaluation Framework     | 🟡 Metrics to be populated with actual held-out results |
+ComponentStatus
 
----
 
-# 👨‍💻 Contributing
 
-```bash
+Core Risk Management
+
+🟢 Active
+
+Fraud-Risk Detection
+
+🟢 Active
+
+Risk Evidence Generation
+
+🟢 Active
+
+AI Copilot
+
+🟢 Integrated
+
+Local Ollama / Zephyr
+
+🟢 Supported
+
+Existing EXE Execution
+
+🟢 Preserved
+
+Docker
+
+🟢 Deployment Ready
+
+VPS Deployment
+
+🟢 Supported
+
+Evaluation Framework
+
+🟡 Metrics to be populated with actual held-out results
+
+👨‍💻 Contributing
+
 git clone <repository-url>
 
 git checkout -b feature/<feature-name>
@@ -1392,19 +1484,21 @@ git add .
 git commit -m "Add <feature>"
 
 git push origin feature/<feature-name>
-```
+
 
 Create a pull request describing:
 
-* What changed
-* Why it changed
-* Testing performed
-* Evaluation performed
-* Deployment implications
+What changed
 
----
+Why it changed
 
-# ⚠️ Disclaimer
+Testing performed
+
+Evaluation performed
+
+Deployment implications
+
+⚠️ Disclaimer
 
 RiskShield AI is an analytical and decision-support system.
 
@@ -1412,36 +1506,88 @@ Its risk assessments and AI-generated explanations should be reviewed by qualifi
 
 The AI Copilot provides assistance based on evidence supplied by the RiskShield system and should not replace appropriate financial, legal, compliance, or security procedures.
 
----
+🧰 Technology Summary
 
-# 🧰 Technology Summary
+LayerTechnology
 
-| Layer           | Technology                               |
-| --------------- | ---------------------------------------- |
-| Frontend        | Next.js / React                          |
-| Styling         | Tailwind CSS                             |
-| Backend         | Python                                   |
-| API             | REST                                     |
-| Risk Engine     | ML + Rules + Anomaly Detection           |
-| Fraud Detection | Machine Learning + Behavioral Signals    |
-| AI Copilot      | Zephyr 7B                                |
-| Model Serving   | Ollama                                   |
-| Data            | Banking / Financial / Synthetic Datasets |
-| Containers      | Docker                                   |
-| Orchestration   | Docker Compose                           |
-| Reverse Proxy   | Nginx                                    |
-| Production OS   | Ubuntu                                   |
-| Deployment      | VPS / Cloud                              |
-| Protocol        | HTTP / HTTPS                             |
-| Version Control | Git                                      |
 
----
 
-# 🛡️ RiskShield AI
+Frontend
 
-### **Detect. Explain. Investigate. Decide.**
+Next.js / React
 
-```text
+Styling
+
+Tailwind CSS
+
+Backend
+
+Python
+
+API
+
+REST
+
+Risk Engine
+
+ML + Rules + Anomaly Detection
+
+Fraud Detection
+
+Machine Learning + Behavioral Signals
+
+AI Copilot
+
+Zephyr 7B
+
+Model Serving
+
+Ollama
+
+Data
+
+Banking / Financial / Synthetic Datasets
+
+Containers
+
+Docker
+
+Orchestration
+
+Docker Compose
+
+Reverse Proxy
+
+Nginx
+
+Production OS
+
+Ubuntu
+
+Deployment
+
+VPS / Cloud
+
+Protocol
+
+HTTP / HTTPS
+
+Version Control
+
+Git
+
+<div align="center">
+
+🛡️ RiskShield AI
+
+AI-Powered Fraud-Risk Detection, Financial Intelligence & Investigation Copilot
+
+Detect → Explain → Investigate → Decide
+
+</div>
+
+Detect. Explain. Investigate. Decide.
+
                   RAW TRANSACTION
                          │
                          ▼
@@ -1464,6 +1610,6 @@ The AI Copilot provides assistance based on evidence supplied by the RiskShield 
                          │
                          ▼
                   DEFENSIVE ACTION
-```
 
-> **RiskShield doesn't just identify that a transaction is risky — it provides measurable fraud detection, exposes the evidence behind the assessment, and gives analysts an AI-powered investigation layer to understand what to examine next.**
+
+RiskShield doesn't just identify that a transaction is risky — it provides measurable fraud detection, exposes the evidence behind the assessment, and gives analysts an AI-powered investigation layer to understand what to examine next.
