@@ -2,8 +2,6 @@
  
   # 🛡️ RiskShield AI
 
- <div align="center">
-
 ### AI-Powered Fraud-Risk Detection, Financial Intelligence & Investigation Copilot
 
 > **RiskShield AI** is an AI-powered financial fraud-risk platform that detects suspicious transactions using machine learning, behavioral signals, anomaly detection, and risk rules — then uses an evidence-grounded AI Copilot to explain the risk, assist investigations, and recommend what analysts should examine next.
