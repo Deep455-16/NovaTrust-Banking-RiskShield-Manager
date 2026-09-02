@@ -5,7 +5,7 @@ AppVersion=1.0
 AppPublisher=NovaTrust Banking
 DefaultGroupName=RiskShield AI Manager
 
-; Install into Local AppData so the app doesn't need Administrator privileges to download Python/Node dependencies via the launcher.
+; Install into Local AppData — no Admin rights needed, npm install and pip install work fine here
 DefaultDirName={localappdata}\RiskShieldAI
 PrivilegesRequired=lowest
 
@@ -17,28 +17,30 @@ SolidCompression=yes
 SetupIconFile=compiler:SetupClassicIcon.ico
 
 [Files]
-; Include the root executables and scripts
+; Root launchers and scripts
 Source: "RiskShieldAI.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "start_app.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "install.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "start_app.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "README.md"; DestDir: "{app}"; Flags: ignoreversion
 
-; Include backend, but EXCLUDE .venv and pycache so the installer is tiny. The C# launcher handles this.
-Source: "backend\*"; DestDir: "{app}\backend"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: ".venv\*,__pycache__\*"
+; Backend — exclude .venv and pycache (install.bat builds them fresh on target machine)
+Source: "backend\*"; DestDir: "{app}\backend"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: ".venv\*,__pycache__\*,*.pyc"
 
-; Include frontend, but EXCLUDE node_modules and .next builds.
+; Frontend — exclude node_modules and .next builds (npm install runs fresh on target machine)
 Source: "frontend\*"; DestDir: "{app}\frontend"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "node_modules\*,.next\*"
 
-; Include the dataset folder
+; Data / datasets
 Source: "data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-; Create a Desktop shortcut and Start Menu shortcut
-Name: "{userdesktop}\RiskShield AI Manager"; Filename: "{app}\RiskShieldAI.exe"
-Name: "{group}\RiskShield AI Manager"; Filename: "{app}\RiskShieldAI.exe"
+; Desktop shortcut
+Name: "{userdesktop}\RiskShield AI Manager"; Filename: "{app}\RiskShieldAI.exe"; Comment: "Launch RiskShield AI Manager"
+; Start Menu shortcut
+Name: "{group}\RiskShield AI Manager"; Filename: "{app}\RiskShieldAI.exe"; Comment: "Launch RiskShield AI Manager"
 
 [Run]
-; Run install.bat to download dependencies completely hidden from the user, but update the installer text!
-Filename: "{app}\install.bat"; Description: "Downloading Required Dependencies (Python, Node, AI)"; StatusMsg: "Downloading AI & App dependencies (this may take 5-10 minutes)..."; Flags: runhidden waituntilterminated
-; Auto-launch the application when the installation finishes
+; STEP 1: Run install.bat completely hidden — downloads Python, Node, Ollama, pip packages, npm packages
+Filename: "{app}\install.bat"; Description: "Setting up dependencies (Python, Node.js, AI model — takes 5-20 min)"; StatusMsg: "Installing Python, Node.js, AI model & all dependencies... Please wait (5-20 minutes)"; Flags: runhidden waituntilterminated
+
+; STEP 2: Auto-launch the application after install finishes
 Filename: "{app}\RiskShieldAI.exe"; Description: "Launch RiskShield AI Manager"; Flags: nowait postinstall skipifsilent
