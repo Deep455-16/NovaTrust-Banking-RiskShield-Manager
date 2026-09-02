@@ -86,10 +86,17 @@ if not defined NPM_EXE (
 if not defined NPM_EXE (
   echo   Node.js not found. Downloading Node.js 20 LTS...
   powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi' -OutFile '%TEMP%\node_installer.msi' -UseBasicParsing"
-  echo   Installing Node.js silently... (may take 2-3 minutes)
+  echo   Installing Node.js silently... (may take a few minutes)
   msiexec /i "%TEMP%\node_installer.msi" /quiet /norestart ADDLOCAL=ALL
-  :: Wait for installer to finish
-  timeout /t 20 /nobreak >nul
+
+  :: Wait loop — exits as soon as npm.cmd appears, max 40 seconds
+  set /a node_wait=0
+  :wait_node
+  timeout /t 5 /nobreak >nul
+  set /a node_wait+=5
+  if exist "%ProgramFiles%\nodejs\npm.cmd" goto node_found
+  if %node_wait% lss 40 goto wait_node
+  :node_found
   set "PATH=%ProgramFiles%\nodejs;%PATH%"
   set "NPM_EXE=%ProgramFiles%\nodejs\npm.cmd"
 )
