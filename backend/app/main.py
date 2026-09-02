@@ -252,38 +252,39 @@ async def score_transaction(transaction: Dict[str, Any], current_user: User = De
         raw_patterns = list(transaction.get("suspicious_patterns", []) or [])
 
         # ── Rule-based signals (always responsive) ──
-        # 1. Fraud Probability (Base: 50% of total score)
-        if amount < 100:
-            rule_fraud_prob = 0.05
-        elif amount < 500:
-            rule_fraud_prob = 0.20
-        elif amount < 1000:
-            rule_fraud_prob = 0.45
-        elif amount < 3000:
-            rule_fraud_prob = 0.70
-        elif amount < 7000:
-            rule_fraud_prob = 0.85
+        # Tuned to strictly match the requested brackets:
+        # <300: LOW, 300-900: MEDIUM, 900-2000: HIGH, >2000: CRITICAL
+        if amount <= 300:
+            # Targets Risk Score ~ 15-25 (LOW)
+            rule_fraud_prob = 0.15
+            rule_anomaly_score = 0.05
+        elif amount <= 900:
+            # Targets Risk Score ~ 40-50 (MEDIUM)
+            rule_fraud_prob = 0.55
+            rule_anomaly_score = 0.35
+        elif amount <= 2000:
+            # Targets Risk Score ~ 65-75 (HIGH)
+            rule_fraud_prob = 0.82
+            rule_anomaly_score = 0.65
         else:
+            # Targets Risk Score ~ 85-95 (CRITICAL)
             rule_fraud_prob = 0.95
+            rule_anomaly_score = 0.90
 
-        # 2. Anomaly Score (Base: 20% of total score)
-        # Driven by high velocity, huge amount deviations, or weird patterns
-        rule_anomaly_score = 0.0
-        if amount > 5000:
-            rule_anomaly_score += 0.4
+        # Anomaly score fluctuates further based on velocity or patterns
         if raw_velocity > 10:
-            rule_anomaly_score += min(raw_velocity * 0.05, 0.4)
+            rule_anomaly_score += 0.20
         if len(raw_patterns) > 0:
-            rule_anomaly_score += 0.3
-
+            rule_anomaly_score += 0.25
+        
         # Boosts
         if raw_is_first_time:
-            rule_fraud_prob += 0.15
-            rule_anomaly_score += 0.2
+            rule_fraud_prob += 0.10
         if len(raw_patterns) > 0:
             rule_fraud_prob += 0.15
 
-        rule_fraud_prob = min(rule_fraud_prob, 1.0)
+        # Fraud probability can NEVER be 100% — hard cap at 98.5%
+        rule_fraud_prob = min(rule_fraud_prob, 0.985)
         rule_anomaly_score = min(rule_anomaly_score, 1.0)
 
         # ── Try ML model — use rule-based as fallback if unavailable ──
