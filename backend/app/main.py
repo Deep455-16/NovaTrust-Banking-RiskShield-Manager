@@ -114,58 +114,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     return User(username=user.username, role=user.role, disabled=user.disabled)
 
 
-async def _background_training():
-    """Run all heavy ML training in background so server starts instantly."""
-    await asyncio.sleep(1)  # yield so server finishes binding port first
-    print("[RiskShield] Background training started...")
-    try:
-        loop = asyncio.get_event_loop()
-        df = await loop.run_in_executor(None, lambda: dataset_loader.load_dataset("banksim", normalize=True))
-        if df is None or len(df) == 0:
-            print("[RiskShield] No dataset found — skipping background training.")
-            return
-        print(f"[RiskShield] Loaded BankSim dataset: {len(df)} rows")
-
-        def do_training():
-            processed_df, features = app_state["preprocessor"].prepare_features(df, fit=True)
-            app_state["feature_names"] = features
-            train_df = processed_df[processed_df["step"] <= 600]
-            test_df  = processed_df[processed_df["step"] > 600]
-            if len(train_df) == 0 or len(test_df) == 0:
-                return
-            X_train = app_state["preprocessor"].get_feature_matrix(train_df)
-            y_train = train_df["fraud_label"].values
-            X_test  = app_state["preprocessor"].get_feature_matrix(test_df)
-            y_test  = test_df["fraud_label"].values
-            print("[RiskShield] Training LightGBM...")
-            app_state["models"].train_model("weighted_lightgbm", X_train, y_train)
-            app_state["models"].evaluate_model("weighted_lightgbm", X_test, y_test)
-            print("[RiskShield] Training Logistic Regression & Random Forest...")
-            for model_name in ["logistic_regression", "random_forest"]:
-                app_state["models"].train_model(model_name, X_train, y_train)
-                app_state["models"].evaluate_model(model_name, X_test, y_test)
-            print("[RiskShield] Fitting anomaly detector...")
-            app_state["anomaly_detector"].fit(X_train)
-            if "weighted_lightgbm" in app_state["models"].models:
-                model = app_state["models"].models["weighted_lightgbm"].artifact.model
-                app_state["shap_explainer"] = SHAPExplainer(model, features)
-                app_state["shap_explainer"].fit(X_train)
-            app_state["drift_monitor"].fit(processed_df, features)
-            app_state["training_fraud_rate"] = float(y_train.mean())
-            app_state["transaction_graph"].build_from_transactions(df.to_dict("records"))
-            print("[RiskShield] Background training complete — all models ready.")
-
-        await loop.run_in_executor(None, do_training)
-    except Exception as e:
-        print(f"[RiskShield] Background training error: {e}")
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("[RiskShield] Server starting — ready in seconds...")
+    # Zero blocking work at startup — server is ready in under 3 seconds.
+    # Models train on-demand when user clicks Train in the UI.
+    print("[RiskShield] Server ready.")
     app_state["copilot_service"] = CopilotService(app_state["local_llm"])
-    # Launch training in background — server is immediately available
-    asyncio.create_task(_background_training())
     yield
     print("[RiskShield] Shutting down...")
     if app_state["simulation_task"]:
