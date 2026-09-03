@@ -25,29 +25,61 @@
 ##      Demo Video Link:
 ###     https://drive.google.com/file/d/1Bk52ISzRWrvtl91k2djySw37CgwIS7KI/view?usp=sharing  
 
-## ⚡ Quick Install
+## ⚡ Quick Install (Recommended)
 
-> **No coding required.** The installer automatically sets up Python, Node.js, Ollama, and the Zephyr AI model — completely silently.
+> **No coding required.** The installer automatically sets up Python, Node.js, Ollama, and the Zephyr AI model.
 
 ### 👉 [Download RiskShieldSetup.exe](https://github.com/Deep455-16/NovaTrust-Banking-RiskShield-Manager/releases/latest/download/RiskShieldSetup.exe)
 
 1. Click the link above to download `RiskShieldSetup.exe`
-2. Double-click the downloaded file to run it
-3. Watch the progress bar as everything installs automatically in the background:
-   - ✅ Python 3.11
-   - ✅ Node.js
+2. Double-click the downloaded file and click **Next**
+3. Wait for the progress bar — setup installs everything automatically in the background:
+   - ✅ Python 3.11 (backend runtime)
+   - ✅ Node.js 20 LTS (frontend runtime)
    - ✅ Ollama AI Runtime
-   - ✅ Zephyr 7B AI Model
+   - ✅ Zephyr 7B AI model (~4 GB download — happens once)
    - ✅ All backend & frontend dependencies
-4. Click **Finish** — the app opens in your browser automatically!
+4. Click **Finish** — the app opens automatically in your browser
 
-> **For developers** who want to run from source code:
-> ```bash
-> git clone https://github.com/Deep455-16/NovaTrust-Banking-RiskShield-Manager.git
-> cd NovaTrust-Banking-RiskShield-Manager
-> install.bat       # auto-installs all dependencies
-> start_app.bat     # launches the app
-> ```
+> ⏱️ **First-time setup takes 10–20 minutes** depending on your internet speed (mainly the 4 GB AI model download). Subsequent launches start in under 5 seconds.
+
+---
+
+## 🛠️ Manual Installation (Developers / Advanced Users)
+
+If you prefer to run from source code or want to customize the application:
+
+### Prerequisites — Download and install these first:
+
+| Tool | Version | Download Link |
+|------|---------|---------------|
+| **Python** | 3.11.x | [python.org/downloads](https://www.python.org/downloads/release/python-3119/) → `python-3.11.9-amd64.exe` |
+| **Node.js** | 20 LTS | [nodejs.org/download](https://nodejs.org/dist/v20.18.0/node-v20.18.0-x64.msi) → `node-v20.18.0-x64.msi` |
+| **Git** | Latest | [git-scm.com/download/win](https://git-scm.com/download/win) → `Git-*-64-bit.exe` |
+| **Ollama** | Latest | [ollama.com/download](https://ollama.com/download/OllamaSetup.exe) → `OllamaSetup.exe` |
+
+> **Important for Python:** During install, tick **"Add Python to PATH"** and **"Install for just me (current user)"**.
+
+### Step-by-step:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Deep455-16/NovaTrust-Banking-RiskShield-Manager.git
+cd NovaTrust-Banking-RiskShield-Manager
+
+# 2. Run the automated setup (installs pip packages and npm packages)
+install.bat
+
+# 3. Launch the application
+start_app.bat
+```
+
+The browser will open automatically at `http://127.0.0.1:3000` once both servers are ready.
+
+### Pull the AI model (once):
+```bash
+ollama pull zephyr:7b-beta
+```
 
 ---
 

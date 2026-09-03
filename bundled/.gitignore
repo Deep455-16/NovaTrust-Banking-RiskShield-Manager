@@ -1,0 +1,7 @@
+# Ignore downloaded installer binaries - too large for git
+# Run download_deps.bat before compiling Inno Setup
+*.exe
+*.msi
+
+# Keep the download helper script
+!download_deps.bat

@@ -1,119 +1,143 @@
 @echo off
 setlocal EnableDelayedExpansion
-chcp 65001 >nul 2>nul
 
 set "ROOT=%~dp0"
+set "BUNDLED=%ROOT%bundled"
+
 echo.
 echo =====================================================
 echo   RiskShield AI Manager - Automated Setup
 echo =====================================================
 echo.
 
-:: ─────────────────────────────────────────────────────
-:: STEP 1 — Python
-:: ─────────────────────────────────────────────────────
+:: =====================================================
+:: STEP 1 - Python 3.11
+:: =====================================================
 echo [1/5] Checking for Python 3.11+...
 set "PYTHON_EXE="
 
-:: Check common Python locations
-for %%P in (python python3) do (
-  for /f "delims=" %%V in ('where %%P 2^>nul') do (
-    if not defined PYTHON_EXE (
-      %%P --version >nul 2>nul && set "PYTHON_EXE=%%P"
-    )
-  )
+for /f "delims=" %%P in ('where python 2^>nul') do (
+  if not defined PYTHON_EXE set "PYTHON_EXE=%%P"
+)
+for /f "delims=" %%P in ('where python3 2^>nul') do (
+  if not defined PYTHON_EXE set "PYTHON_EXE=%%P"
 )
 
-:: Try py launcher
 if not defined PYTHON_EXE (
   py -3.11 --version >nul 2>nul && set "PYTHON_EXE=py -3.11"
 )
-
-:: Try known install paths
 if not defined PYTHON_EXE (
   if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
     set "PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
   )
 )
-
-:: Still not found — download and install silently
 if not defined PYTHON_EXE (
-  echo   Python not found. Downloading Python 3.11.8...
-  powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.11.8/python-3.11.8-amd64.exe' -OutFile '%TEMP%\python_installer.exe' -UseBasicParsing"
-  echo   Installing Python silently...
-  "%TEMP%\python_installer.exe" /quiet InstallAllUsers=0 PrependPath=1 Include_test=0 Include_launcher=1
-  :: Wait for install to complete
-  timeout /t 10 /nobreak >nul
-  set "PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
+  if exist "%ProgramFiles%\Python311\python.exe" (
+    set "PYTHON_EXE=%ProgramFiles%\Python311\python.exe"
+  )
 )
 
-:: Verify Python works
-"%PYTHON_EXE%" --version >nul 2>nul
-if errorlevel 1 (
-  echo   [ERROR] Python installation failed. Please install Python 3.11+ manually from https://python.org
+if not defined PYTHON_EXE (
+  echo   Python not found. Installing Python 3.11...
+  if exist "%BUNDLED%\python-3.11.9-amd64.exe" (
+    echo   Using bundled Python installer...
+    "%BUNDLED%\python-3.11.9-amd64.exe" /quiet InstallAllUsers=0 PrependPath=1 Include_test=0 Include_launcher=1
+  ) else (
+    echo   Downloading Python 3.11.9 from python.org...
+    powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe' -OutFile '%TEMP%\python_installer.exe' -UseBasicParsing"
+    "%TEMP%\python_installer.exe" /quiet InstallAllUsers=0 PrependPath=1 Include_test=0 Include_launcher=1
+  )
+  timeout /t 20 /nobreak >nul
+  if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
+    set "PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
+  ) else if exist "%ProgramFiles%\Python311\python.exe" (
+    set "PYTHON_EXE=%ProgramFiles%\Python311\python.exe"
+  )
+)
+
+if not defined PYTHON_EXE (
+  echo   [ERROR] Python could not be installed.
+  echo   Please install Python 3.11 manually from: https://www.python.org/downloads/
   pause
   exit /b 1
 )
-echo   Python OK: 
+
+"%PYTHON_EXE%" --version >nul 2>nul
+if errorlevel 1 (
+  echo   [ERROR] Python not working correctly.
+  pause
+  exit /b 1
+)
+echo   Python OK:
 "%PYTHON_EXE%" --version
 
-:: ─────────────────────────────────────────────────────
-:: STEP 2 — Node.js
-:: ─────────────────────────────────────────────────────
+:: =====================================================
+:: STEP 2 - Node.js 20 LTS
+:: =====================================================
 echo.
 echo [2/5] Checking for Node.js...
-set "NPM_EXE="
-set "NODE_PATH_ADDED="
+set "NPM_CMD="
 
-:: Check standard PATH
-where npm >nul 2>nul && set "NPM_EXE=npm"
-
-:: Check known install paths if not on PATH
-if not defined NPM_EXE (
+where npm >nul 2>nul && set "NPM_CMD=npm"
+if not defined NPM_CMD (
   if exist "%ProgramFiles%\nodejs\npm.cmd" (
-    set "NPM_EXE=%ProgramFiles%\nodejs\npm.cmd"
+    set "NPM_CMD=%ProgramFiles%\nodejs\npm.cmd"
     set "PATH=%ProgramFiles%\nodejs;%PATH%"
-    set "NODE_PATH_ADDED=1"
   )
 )
-if not defined NPM_EXE (
+if not defined NPM_CMD (
+  if exist "%ProgramFiles(x86)%\nodejs\npm.cmd" (
+    set "NPM_CMD=%ProgramFiles(x86)%\nodejs\npm.cmd"
+    set "PATH=%ProgramFiles(x86)%\nodejs;%PATH%"
+  )
+)
+if not defined NPM_CMD (
   if exist "%APPDATA%\nvm\nodejs\npm.cmd" (
-    set "NPM_EXE=%APPDATA%\nvm\nodejs\npm.cmd"
+    set "NPM_CMD=%APPDATA%\nvm\nodejs\npm.cmd"
   )
 )
 
-:: Still not found — download and install silently
-if not defined NPM_EXE (
-  echo   Node.js not found. Downloading Node.js 20 LTS...
-  powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi' -OutFile '%TEMP%\node_installer.msi' -UseBasicParsing"
-  echo   Installing Node.js silently... (may take a few minutes)
-  msiexec /i "%TEMP%\node_installer.msi" /quiet /norestart ADDLOCAL=ALL
-
-  :: Wait loop — exits as soon as npm.cmd appears, max 40 seconds
+if not defined NPM_CMD (
+  echo   Node.js not found. Installing Node.js 20 LTS...
+  if exist "%BUNDLED%\node-v20.18.0-x64.msi" (
+    echo   Using bundled Node.js installer...
+    msiexec /i "%BUNDLED%\node-v20.18.0-x64.msi" /quiet /norestart ADDLOCAL=ALL
+  ) else (
+    echo   Downloading Node.js 20 LTS...
+    powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://nodejs.org/dist/v20.18.0/node-v20.18.0-x64.msi' -OutFile '%TEMP%\node_installer.msi' -UseBasicParsing"
+    msiexec /i "%TEMP%\node_installer.msi" /quiet /norestart ADDLOCAL=ALL
+  )
+  :: Wait loop - check every 5s, max 60s
   set /a node_wait=0
   :wait_node
   timeout /t 5 /nobreak >nul
   set /a node_wait+=5
   if exist "%ProgramFiles%\nodejs\npm.cmd" goto node_found
-  if %node_wait% lss 40 goto wait_node
+  if %node_wait% lss 60 goto wait_node
   :node_found
+  set "NPM_CMD=%ProgramFiles%\nodejs\npm.cmd"
   set "PATH=%ProgramFiles%\nodejs;%PATH%"
-  set "NPM_EXE=%ProgramFiles%\nodejs\npm.cmd"
 )
 
-:: Verify npm works
-call "%NPM_EXE%" --version >nul 2>nul
-if errorlevel 1 (
-  echo   [ERROR] Node.js installation failed. Please install Node.js 20+ manually from https://nodejs.org
+if not defined NPM_CMD (
+  echo   [ERROR] Node.js could not be installed.
+  echo   Please install Node.js 20 LTS manually from: https://nodejs.org/en/download
   pause
   exit /b 1
 )
-echo   Node.js OK: 
-call "%NPM_EXE%" --version
 
-:: ─────────────────────────────────────────────────────
-:: STEP 3 — Python Virtual Environment + pip install
-:: ─────────────────────────────────────────────────────
+call "%NPM_CMD%" --version >nul 2>nul
+if errorlevel 1 (
+  echo   [ERROR] npm not working.
+  pause
+  exit /b 1
+)
+echo   Node.js OK - npm version:
+call "%NPM_CMD%" --version
+
+:: =====================================================
+:: STEP 3 - Python virtual environment + pip install
+:: =====================================================
 echo.
 echo [3/5] Setting up Python backend environment...
 
@@ -132,63 +156,49 @@ set "VENV_PIP=%ROOT%backend\.venv\Scripts\pip.exe"
 
 echo   Upgrading pip...
 "%VENV_PYTHON%" -m pip install --upgrade pip --quiet
-if errorlevel 1 (
-  echo   [ERROR] pip upgrade failed.
-  pause
-  exit /b 1
-)
 
-echo   Installing backend dependencies from requirements.txt...
-echo   (This may take 5-10 minutes for first-time install)
+echo   Installing backend dependencies (first run may take 5-10 min)...
 "%VENV_PYTHON%" -m pip install -r "%ROOT%backend\requirements.txt"
 if errorlevel 1 (
-  echo   [ERROR] pip install -r requirements.txt failed.
+  echo   [ERROR] pip install failed. Check your internet connection.
   pause
   exit /b 1
 )
-echo   Backend Python dependencies installed successfully.
+echo   Backend dependencies installed.
 
-:: ─────────────────────────────────────────────────────
-:: STEP 4 — Frontend npm install
-:: ─────────────────────────────────────────────────────
+:: =====================================================
+:: STEP 4 - Frontend npm install
+:: =====================================================
 echo.
-echo [4/5] Installing frontend dependencies (Next.js + React)...
-echo   (This may take 3-5 minutes for first-time install)
+echo [4/5] Installing frontend dependencies (first run may take 3-5 min)...
 
 cd /d "%ROOT%frontend"
-call "%NPM_EXE%" install --prefer-offline
+call "%NPM_CMD%" install --prefer-offline
 if errorlevel 1 (
-  echo   [ERROR] npm install failed. Retrying with clean cache...
-  call "%NPM_EXE%" cache clean --force
-  call "%NPM_EXE%" install
+  echo   npm install failed. Retrying...
+  call "%NPM_CMD%" cache clean --force
+  call "%NPM_CMD%" install
   if errorlevel 1 (
-    echo   [ERROR] Frontend npm install failed completely.
+    echo   [ERROR] Frontend npm install failed.
     pause
     exit /b 1
   )
 )
 
-:: Verify next.js binary exists
 if not exist "%ROOT%frontend\node_modules\.bin\next.cmd" (
-  echo   [ERROR] Next.js was not found in node_modules after npm install.
-  echo   Attempting to install Next.js directly...
-  call "%NPM_EXE%" install next react react-dom
-  if errorlevel 1 (
-    pause
-    exit /b 1
-  )
+  echo   Installing Next.js directly...
+  call "%NPM_CMD%" install next react react-dom
 )
-echo   Frontend dependencies installed successfully.
+echo   Frontend dependencies installed.
 
-:: ─────────────────────────────────────────────────────
-:: STEP 5 — Ollama + Zephyr
-:: ─────────────────────────────────────────────────────
+:: =====================================================
+:: STEP 5 - Ollama + Zephyr AI model
+:: =====================================================
 echo.
-echo [5/5] Checking for Ollama AI Runtime...
+echo [5/5] Checking Ollama AI Runtime...
 set "OLLAMA_EXE="
 
 where ollama >nul 2>nul && set "OLLAMA_EXE=ollama"
-
 if not defined OLLAMA_EXE (
   if exist "%LOCALAPPDATA%\Programs\Ollama\ollama.exe" (
     set "OLLAMA_EXE=%LOCALAPPDATA%\Programs\Ollama\ollama.exe"
@@ -197,27 +207,35 @@ if not defined OLLAMA_EXE (
 )
 
 if not defined OLLAMA_EXE (
-  echo   Ollama not found. Downloading Ollama...
-  powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://ollama.com/download/OllamaSetup.exe' -OutFile '%TEMP%\OllamaSetup.exe' -UseBasicParsing"
-  echo   Installing Ollama silently...
-  "%TEMP%\OllamaSetup.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
-  timeout /t 15 /nobreak >nul
+  echo   Ollama not found. Installing...
+  if exist "%BUNDLED%\OllamaSetup.exe" (
+    echo   Using bundled Ollama installer...
+    "%BUNDLED%\OllamaSetup.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+  ) else (
+    echo   Downloading Ollama from ollama.com...
+    powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://ollama.com/download/OllamaSetup.exe' -OutFile '%TEMP%\OllamaSetup.exe' -UseBasicParsing"
+    "%TEMP%\OllamaSetup.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+  )
+  timeout /t 20 /nobreak >nul
   set "OLLAMA_EXE=%LOCALAPPDATA%\Programs\Ollama\ollama.exe"
   set "PATH=%LOCALAPPDATA%\Programs\Ollama;%PATH%"
 )
 
-:: Start ollama server in background and pull zephyr
-echo   Starting Ollama server...
-start /b "" "%OLLAMA_EXE%" serve
-timeout /t 5 /nobreak >nul
+if defined OLLAMA_EXE (
+  echo   Starting Ollama server...
+  start /b "" "%OLLAMA_EXE%" serve
+  timeout /t 6 /nobreak >nul
+  echo   Pulling Zephyr 7B AI model (this runs once - may take 10-30 min on first run)...
+  "%OLLAMA_EXE%" pull zephyr:7b-beta
+  echo   AI Copilot model ready.
+) else (
+  echo   [WARNING] Ollama not found. AI Copilot feature will be unavailable.
+  echo   Install Ollama manually from: https://ollama.com/download
+)
 
-echo   Pulling Zephyr 7B AI model (this may take 10-20 min on first run)...
-"%OLLAMA_EXE%" pull zephyr:7b-beta
-echo   AI Copilot model ready.
-
-:: ─────────────────────────────────────────────────────
+:: =====================================================
 :: Done
-:: ─────────────────────────────────────────────────────
+:: =====================================================
 echo.
 echo =====================================================
 echo   Installation Complete!
