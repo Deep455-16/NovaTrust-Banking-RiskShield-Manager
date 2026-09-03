@@ -36,12 +36,15 @@
 3. Wait for the progress bar — setup installs everything automatically in the background:
    - ✅ Python 3.11 (backend runtime)
    - ✅ Node.js 20 LTS (frontend runtime)
-   - ✅ Ollama AI Runtime
-   - ✅ Zephyr 7B AI model (~4 GB download — happens once)
    - ✅ All backend & frontend dependencies
 4. Click **Finish** — the app opens automatically in your browser
 
-> ⏱️ **First-time setup takes 10–20 minutes** depending on your internet speed (mainly the 4 GB AI model download). Subsequent launches start in under 5 seconds.
+> ⏱️ **First-time setup takes 2–5 minutes.** Subsequent launches start in under 5 seconds.
+
+### 🤖 Optional: Enable AI Copilot
+The AI Copilot uses a 4GB LLM. To keep the core installation fast and lightweight, it is not included in the `.exe`. If you want to use the Copilot features:
+1. Download and install [Ollama](https://ollama.com/download/OllamaSetup.exe)
+2. Open a Command Prompt or Terminal and run: `ollama pull zephyr:7b-beta`
 
 ---
 

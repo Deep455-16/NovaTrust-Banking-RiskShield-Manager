@@ -191,47 +191,7 @@ if not exist "%ROOT%frontend\node_modules\.bin\next.cmd" (
 )
 echo   Frontend dependencies installed.
 
-:: =====================================================
-:: STEP 5 - Ollama + Zephyr AI model
-:: =====================================================
-echo.
-echo [5/5] Checking Ollama AI Runtime...
-set "OLLAMA_EXE="
 
-where ollama >nul 2>nul && set "OLLAMA_EXE=ollama"
-if not defined OLLAMA_EXE (
-  if exist "%LOCALAPPDATA%\Programs\Ollama\ollama.exe" (
-    set "OLLAMA_EXE=%LOCALAPPDATA%\Programs\Ollama\ollama.exe"
-    set "PATH=%LOCALAPPDATA%\Programs\Ollama;%PATH%"
-  )
-)
-
-if not defined OLLAMA_EXE (
-  echo   Ollama not found. Installing...
-  if exist "%BUNDLED%\OllamaSetup.exe" (
-    echo   Using bundled Ollama installer...
-    "%BUNDLED%\OllamaSetup.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
-  ) else (
-    echo   Downloading Ollama from ollama.com...
-    powershell -NoProfile -Command "Invoke-WebRequest -Uri 'https://ollama.com/download/OllamaSetup.exe' -OutFile '%TEMP%\OllamaSetup.exe' -UseBasicParsing"
-    "%TEMP%\OllamaSetup.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
-  )
-  timeout /t 20 /nobreak >nul
-  set "OLLAMA_EXE=%LOCALAPPDATA%\Programs\Ollama\ollama.exe"
-  set "PATH=%LOCALAPPDATA%\Programs\Ollama;%PATH%"
-)
-
-if defined OLLAMA_EXE (
-  echo   Starting Ollama server...
-  start /b "" "%OLLAMA_EXE%" serve
-  timeout /t 6 /nobreak >nul
-  echo   Pulling Zephyr 7B AI model (this runs once - may take 10-30 min on first run)...
-  "%OLLAMA_EXE%" pull zephyr:7b-beta
-  echo   AI Copilot model ready.
-) else (
-  echo   [WARNING] Ollama not found. AI Copilot feature will be unavailable.
-  echo   Install Ollama manually from: https://ollama.com/download
-)
 
 :: =====================================================
 :: Done
