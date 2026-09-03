@@ -113,7 +113,7 @@ if not defined NPM_CMD (
   timeout /t 5 /nobreak >nul
   set /a node_wait+=5
   if exist "%ProgramFiles%\nodejs\npm.cmd" goto node_found
-  if %node_wait% lss 60 goto wait_node
+  if !node_wait! lss 60 goto wait_node
   :node_found
   set "NPM_CMD=%ProgramFiles%\nodejs\npm.cmd"
   set "PATH=%ProgramFiles%\nodejs;%PATH%"

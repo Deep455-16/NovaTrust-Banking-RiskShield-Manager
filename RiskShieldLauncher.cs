@@ -23,26 +23,26 @@ namespace RiskShieldLauncher
             Console.WriteLine("[1/5] Checking Python installation...");
             if (!IsCommandAvailable("python --version"))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("ERROR: Python is not installed or not in PATH.");
-                Console.WriteLine("Please install Python 3.10+ from python.org and ensure 'Add to PATH' is checked.");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("WARNING: Python is not globally in PATH. The installer will attempt to install it.");
                 Console.ResetColor();
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadKey();
-                return;
+            }
+            else
+            {
+                Console.WriteLine("      Python detected.");
             }
             
             // Step 2: Check Node.js
             Console.WriteLine("[2/5] Checking Node.js installation...");
             if (!IsCommandAvailable("npm --version"))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("ERROR: Node.js/npm is not installed or not in PATH.");
-                Console.WriteLine("Please install Node.js from nodejs.org.");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("WARNING: Node.js/npm is not globally in PATH. The installer will attempt to install it.");
                 Console.ResetColor();
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadKey();
-                return;
+            }
+            else
+            {
+                Console.WriteLine("      Node.js detected.");
             }
             
             // Step 3 & 4: Check Dependencies
