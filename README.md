@@ -38,6 +38,7 @@
    - ✅ Node.js 20 LTS (frontend runtime)
    - ✅ All backend & frontend dependencies
 4. Click **Finish** — the app opens automatically in your browser
+5. It is Adviced to manually install Node.js and Python3.11 if not in PC, as the combined Installation can significantly take more time.
 
 > ⏱️ **First-time setup takes 2–5 minutes.** Subsequent launches start in under 5 seconds.
 
