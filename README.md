@@ -1,160 +1,210 @@
-# 🏗️ RiskShield AI: System Architecture
+<div align="center">
 
-> Technical deep-dive into how RiskShield detects fraud, grounds its AI Copilot in evidence, and deploys from a laptop to a production VPS.
-> Back to [README](README.md).
+# 🛡️ RiskShield AI
 
----
+### AI-Powered Fraud-Risk Detection & Investigation Copilot
 
-## 📑 Contents
+**Detect → Explain → Investigate → Decide**
 
-1. [Design Principles](#-design-principles)
-2. [System Context](#-system-context)
-3. [Component Overview](#-component-overview)
-4. [Risk Engine](#-risk-engine)
-5. [Transaction Flow](#-end-to-end-transaction-flow)
-6. [AI Copilot](#-ai-copilot)
-7. [AI Safety Boundaries](#-ai-safety-boundaries)
-8. [Data Layer](#-data-layer)
-9. [Deployment Topologies](#-deployment-topologies)
-10. [Security Architecture](#-security-architecture)
-11. [Health & Failure Modes](#-health--failure-modes)
-12. [Performance & Scalability](#-performance--scalability)
-13. [Evaluation Methodology](#-evaluation-methodology)
-14. [Repository Layout](#-repository-layout)
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Next.js](https://img.shields.io/badge/Frontend-Next.js-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![Ollama](https://img.shields.io/badge/LLM-Ollama%20%2B%20Zephyr%207B-7C3AED)](https://ollama.com/)
+[![Docker](https://img.shields.io/badge/Deploy-Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Human in the Loop](https://img.shields.io/badge/AI-Human--in--the--Loop-F59E0B)](#-ai-safety-model)
+[![Status](https://img.shields.io/badge/Status-Active-22C55E)](#-project-status)
 
----
+[**Demo Video**](https://drive.google.com/file/d/1Bk52ISzRWrvtl91k2djySw37CgwIS7KI/view?usp=sharing) ·
+[**Download for Windows**](https://github.com/Deep455-16/NovaTrust-Banking-RiskShield-Manager/releases/latest/download/RiskShieldSetup.exe) ·
+[**Architecture**](ARCHITECTURE.md) ·
+[**Quick Start**](#-quick-start)
 
-## 🎯 Design Principles
-
-| # | Principle | Consequence |
-|---|---|---|
-| 1 | **Detection and explanation are separate** | The Risk Engine is authoritative; the LLM only interprets its output |
-| 2 | **Evidence-grounded AI** | The Copilot prompt contains structured evidence and nothing it could fabricate from |
-| 3 | **Human-in-the-loop** | No automated approve/reject path through the LLM |
-| 4 | **Optional intelligence layer** | Core platform works with Ollama off |
-| 5 | **Local-first** | Existing `.exe` and scripts keep working; AI can run fully on-device |
-| 6 | **Defensive purpose only** | Built for detection and investigation, not offensive capability |
-| 7 | **Independently replaceable parts** | Frontend, API, engine, data, and inference scale or swap separately |
+</div>
 
 ---
 
-## 🌐 System Context
+## 📖 Overview
 
-```mermaid
-flowchart TB
-    Analyst([👤 Fraud Analyst])
+**RiskShield AI** is a defensive financial-fraud platform. A deterministic **Risk Engine** (machine learning + rules + anomaly detection + behavioral signals) scores every transaction and produces structured evidence. An optional, **evidence-grounded AI Copilot** (Zephyr 7B served locally via Ollama) then explains that evidence in plain language and suggests what an analyst should examine next.
 
-    subgraph RiskShield[RiskShield AI]
-        FE[Frontend<br/>Next.js · React · Tailwind]
-        API[Backend API<br/>Python · FastAPI]
-        RE[Risk Engine]
-        CP[AI Copilot Service]
-        DL[(Data Layer)]
-    end
+> **The Risk Engine detects. The AI Copilot explains. The analyst decides.**
 
-    OLL[[Ollama<br/>Zephyr 7B]]
-
-    Analyst --> FE
-    FE --> API
-    API --> RE
-    API --> CP
-    RE --> DL
-    CP --> RE
-    CP --> OLL
-```
-
----
-
-## 🧱 Component Overview
+The LLM is never the source of truth. It cannot change a score, invent evidence, or approve/reject a transaction.
 
 ```mermaid
 flowchart LR
-    subgraph Frontend
-        D[Dashboard]
-        TX[Transactions]
-        RA[Risk Analysis]
-        CU[Copilot UI]
-    end
-
-    subgraph Backend
-        TA[Transaction API]
-        RAPI[Risk API]
-        CAPI[Copilot API]
-        AU[Auth]
-    end
-
-    subgraph Engine[Risk Engine]
-        FE2[Feature Engineering]
-        ML[ML Models]
-        RU[Rule Engine]
-        AN[Anomaly Detection]
-        SC[Score Aggregator]
-    end
-
-    subgraph Copilot
-        CB[Context Builder]
-        PR[Prompt Templates]
-        OC[Ollama Client]
-    end
-
-    D & TX & RA --> TA & RAPI
-    CU --> CAPI
-    TA --> FE2
-    FE2 --> ML & RU & AN
-    ML & RU & AN --> SC
-    CAPI --> CB --> PR --> OC
+    T[Transaction] --> RE[Risk Engine<br/>ML · Rules · Anomalies]
+    RE --> EV[Risk Evidence<br/>Score · Probability · Signals]
+    EV --> D[Analyst Dashboard]
+    EV --> C[AI Copilot<br/>Zephyr 7B via Ollama]
+    C --> A[Human Analyst]
+    D --> A
+    A --> F[Final Decision]
 ```
-
-| Layer | Responsibility |
-|---|---|
-| **Frontend** | Dashboard, transaction views, risk analysis, Copilot chat |
-| **Backend API** | Transaction, Risk, and Copilot endpoints; authentication; request validation |
-| **Risk Engine** | Authoritative scoring and evidence generation |
-| **Data Layer** | Transactions, datasets, history, processed features, indexes |
-| **Copilot** | Context building, prompting, Ollama communication, response shaping |
 
 ---
 
-## 🧩 Risk Engine
+## ✨ Key Features
 
-The Risk Engine is the **only** component that produces risk decisions.
+| | Feature | What it gives you |
+|---|---|---|
+| 🔍 | **Multi-signal fraud detection** | ML prediction, rule evaluation, anomaly detection, velocity, device, geo, timing, and amount signals |
+| 📊 | **Structured risk evidence** | Risk score, fraud probability, risk level, risk factors, triggered rules, recommended action |
+| 🔎 | **Explainable by design** | Every flag ships with the *why*, not just a label |
+| 🧠 | **AI Investigation Copilot** | Natural-language explanations, summaries, and next-step suggestions grounded in engine evidence |
+| 🛡️ | **Defense-first safety model** | LLM is read-only over evidence; analyst remains the decision-maker |
+| 💻 | **Local & private AI** | Zephyr 7B runs locally through Ollama, so transaction context does not need to leave your machine |
+| 🔌 | **Graceful degradation** | If Ollama is down, the core Risk Engine keeps working |
+| 🐳 | **Flexible deployment** | One-click Windows installer, local dev, Docker Compose, or production VPS behind Nginx |
 
-```mermaid
-flowchart TD
-    IN[Raw Transaction] --> PRE[Preprocessing]
-    PRE --> FEAT[Feature Extraction]
-    FEAT --> ML[ML Fraud Prediction]
-    FEAT --> RULES[Rule Evaluation]
-    FEAT --> ANOM[Anomaly Detection]
-    ML --> AGG[Score Aggregation]
-    RULES --> AGG
-    ANOM --> AGG
-    AGG --> OUT[Risk Evidence]
+### Example risk output
+
+```text
+Transaction:        TX-102
+Risk Score:         87 / 100
+Risk Level:         HIGH
+Fraud Probability:  87%
+
+Primary Risk Factors
+  • Unusually high transaction amount
+  • Previously unseen device
+  • Geographic anomaly
+  • Abnormal transaction frequency
+
+Triggered Rules
+  • RULE_HIGH_AMOUNT
+  • RULE_NEW_DEVICE
+
+Recommended Action: STEP-UP AUTHENTICATION
 ```
 
-### Signals consumed
+### Example Copilot questions
 
-| Category | Examples |
+- *Why is this transaction high risk?*
+- *Which rules were triggered?*
+- *What are the strongest risk indicators?*
+- *What evidence supports this score?*
+- *Summarize this transaction.*
+- *What should I investigate next?*
+
+---
+
+## 🚀 Quick Start
+
+### Option 1 · Windows installer (recommended)
+
+1. **[Download `RiskShieldSetup.exe`](https://github.com/Deep455-16/NovaTrust-Banking-RiskShield-Manager/releases/latest/download/RiskShieldSetup.exe)**
+2. Run it and click **Next**. The installer sets up Python 3.11, Node.js 20 LTS, and all backend/frontend dependencies.
+3. Click **Finish**. The app opens in your browser.
+
+> ⏱️ First-time setup takes about 2–5 minutes; later launches start in under 5 seconds.
+> 💡 If you already have Python 3.11 and Node.js 20 installed, installing them yourself first makes setup noticeably faster.
+
+### Option 2 · From source
+
+**Prerequisites**
+
+| Tool | Version | Notes |
+|---|---|---|
+| Python | 3.11.x | Tick **Add Python to PATH** during install |
+| Node.js | 20 LTS | |
+| Git | Latest | |
+| Ollama | Latest | Only needed for the AI Copilot |
+
+```bash
+git clone https://github.com/Deep455-16/NovaTrust-Banking-RiskShield-Manager.git
+cd NovaTrust-Banking-RiskShield-Manager
+
+install.bat      # installs pip + npm dependencies
+start_app.bat    # launches backend + frontend
+```
+
+Open **http://127.0.0.1:3000** once both servers are ready.
+
+### 🤖 Enable the AI Copilot (optional)
+
+The Copilot uses a ~4 GB model that is intentionally *not* bundled, which keeps the core install light.
+
+```bash
+# 1. Install Ollama: https://ollama.com/download
+# 2. Pull the model once
+ollama pull zephyr:7b-beta
+```
+
+Verify with `GET /api/copilot/health`.
+
+---
+
+## 🧩 How It Works
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Tx as Transaction
+    participant RE as Risk Engine
+    participant UI as Dashboard
+    participant CP as Copilot
+    participant LLM as Zephyr 7B
+    participant An as Analyst
+
+    Tx->>RE: Preprocess + extract features
+    RE->>RE: ML score · rules · anomalies
+    RE-->>UI: Risk evidence (authoritative)
+    An->>CP: "Why is TX-102 high risk?"
+    CP->>RE: Fetch structured evidence
+    CP->>LLM: Evidence-only prompt
+    LLM-->>CP: Interpretation
+    CP-->>An: Grounded explanation + next steps
+    An->>An: Final decision
+```
+
+For the full component breakdown, deployment topologies, and security model, see **[ARCHITECTURE.md](ARCHITECTURE.md)**.
+
+---
+
+## 🛡️ AI Safety Model
+
+Zephyr is deliberately fenced off from the authoritative decision.
+
+| The Copilot **cannot** | The Copilot **can** |
 |---|---|
-| **Amount** | Amount outliers vs. history |
-| **Behavior** | Frequency, velocity, user behavior patterns |
-| **Context** | Device, location, geographic anomalies |
-| **Temporal** | Transaction timing |
-| **History** | Past activity and prior risk cases |
-| **Rules** | Rule violations such as `RULE_HIGH_AMOUNT`, `RULE_NEW_DEVICE` |
+| ❌ Modify or override the risk score | ✅ Explain observed signals |
+| ❌ Invent transaction data or evidence | ✅ Assist investigations |
+| ❌ Run arbitrary SQL | ✅ Give evidence-based recommendations |
+| ❌ Access application secrets | ✅ State clearly when information is unavailable |
+| ❌ Approve or reject transactions | ✅ Keep the human analyst in the loop |
 
-### Output contract (evidence)
+---
 
-| Field | Description |
+## 📈 Evaluation
+
+RiskShield is designed around **measurable** fraud-detection performance, evaluated on a **held-out test set** never used for training or tuning.
+
+| Metric | Meaning |
 |---|---|
-| `risk_score` | Overall score (0–100) |
-| `fraud_probability` | Estimated fraud likelihood |
-| `risk_level` | Low / Medium / High |
-| `signals` | Risk factors with severity |
-| `triggered_rules` | Rules that fired |
-| `anomalies` | Detected behavioral abnormalities |
-| `features` | Features used in the analysis |
-| `recommended_action` | Suggested defensive response (e.g. step-up authentication) |
+| **Precision** | Share of flagged transactions that are truly fraud |
+| **Recall** | Share of all fraud that was caught |
+| **F1** | Balance of precision and recall |
+| **False Positive Rate** | Share of legitimate transactions wrongly flagged |
+| **False Positive Cost** | `False Positives × Estimated Cost per False Positive` (configurable) |
+
+> **Note:** No benchmark numbers are claimed here. Results will be published only from real held-out experiments. See [Project Status](#-project-status).
+
+---
+
+## 🔌 API
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/api/health` | Backend and Risk Engine health |
+| `GET` | `/api/copilot/health` | Ollama / model availability |
+| `POST` | `/api/copilot/chat` | Ask the Copilot about a transaction |
+| `POST` | `/api/copilot/investigate` | Run a guided investigation |
+
+> Exact endpoints follow the project's current API conventions.
+
+<details>
+<summary><b>Example risk-engine payload</b></summary>
 
 ```json
 {
@@ -170,286 +220,157 @@ flowchart TD
 }
 ```
 
----
-
-## 🔄 End-to-End Transaction Flow
-
-```mermaid
-flowchart TD
-    A[1 · Transaction enters RiskShield] --> B[2 · Preprocessing]
-    B --> C[3 · Feature extraction]
-    C --> D[4 · ML fraud-risk prediction]
-    D --> E[5 · Rule evaluation]
-    E --> F[6 · Anomaly detection]
-    F --> G[7 · Risk score generation]
-    G --> H[8 · Risk evidence generation]
-    H --> I[9 · Evidence shown on dashboard]
-    I --> J[10 · Analyst opens Copilot]
-    J --> K[11 · Structured evidence supplied]
-    K --> L[12 · Zephyr interprets evidence]
-    L --> M[13 · Explanation / investigation / recommendation]
-    M --> N[14 · Analyst makes final decision]
-```
-
-Steps 1–9 never depend on the LLM. Steps 10–13 are optional and additive.
+</details>
 
 ---
 
-## 🧠 AI Copilot
+## 🛠️ Technology Stack
 
-### Request flow
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor An as Analyst
-    participant FE as Frontend
-    participant API as Backend API
-    participant CB as Context Builder
-    participant OL as Ollama
-    participant Z as Zephyr 7B
-
-    An->>FE: "Why is TX-102 high risk?"
-    FE->>API: POST /api/copilot/chat
-    API->>CB: Resolve transaction + evidence
-    CB-->>API: Structured context
-    API->>OL: Evidence-grounded prompt
-    OL->>Z: Generate
-    Z-->>OL: Interpretation
-    OL-->>API: Response
-    API-->>FE: Evidence-based answer
-    FE-->>An: Explanation + next steps
-```
-
-### Copilot module layout
-
-| File | Role |
+| Layer | Technology |
 |---|---|
-| `ollama_client.py` | HTTP client for Ollama, with timeouts and error handling |
-| `service.py` | Orchestrates context building, prompting, response handling |
-| `prompts.py` | System and task prompt templates |
-| `schemas.py` | Request/response validation models |
-
-### Supported interactions
-
-`chat` (Q&A over a transaction) and `investigate` (guided analysis). Typical tasks include explaining risk, listing triggered rules, summarizing a transaction, and suggesting next investigative steps.
+| **Frontend** | Next.js, React, Tailwind CSS |
+| **Backend** | Python, FastAPI, Uvicorn |
+| **Risk Engine** | Machine learning, feature engineering, rule-based detection, anomaly detection |
+| **AI Copilot** | Zephyr 7B (`HuggingFaceH4/zephyr-7b-beta`) served by Ollama |
+| **Data** | Banking, fraud, and synthetic financial datasets |
+| **Infrastructure** | Docker, Docker Compose, Nginx, Ubuntu VPS, HTTPS |
 
 ---
 
-## 🛡️ AI Safety Boundaries
+## 🚢 Deployment Modes
 
-```mermaid
-flowchart LR
-    TX[Transaction] --> RE[Risk Engine]
-    RE -->|authoritative evidence| Z[Zephyr 7B]
-    Z -->|interpretation only| AN[Analyst]
-    AN --> DEC{{Final Decision}}
-    Z -.->|❌ cannot write back| RE
-```
-
-| Guardrail | Enforcement |
-|---|---|
-| Cannot modify risk score | Evidence is passed read-only; no write path from Copilot to engine |
-| Cannot fabricate evidence | Prompt restricts answers to supplied fields; unavailable data must be stated as unavailable |
-| Cannot execute arbitrary SQL | Copilot has no database tool; backend exposes only controlled lookups |
-| Cannot access secrets | Secrets live in environment config and are never placed in prompts |
-| Cannot approve/reject | No decision endpoint is reachable from the LLM path |
-| Prompt-injection resistance | Transaction fields are treated as data, validated, and tested adversarially |
-
----
-
-## 📚 Data Layer
-
-```mermaid
-flowchart LR
-    S1[Fraud transaction data] --> RS
-    S2[Banking transaction data] --> RS
-    S3[Financial crime data] --> RS
-    S4[Synthetic transactions] --> RS
-    S5[Historical risk cases] --> RS
-    RS[(RiskShield data layer)]
-    RS --> M[Model development]
-    RS --> T[Testing & evaluation]
-    RS --> DM[Demonstration]
-```
-
-Synthetic records reproduce realistic transaction patterns without exposing real customer information. Data is organized under `data/datasets`, `data/processed`, and `data/indexes`.
-
----
-
-## 🚢 Deployment Topologies
-
-RiskShield supports four coexisting modes.
-
-### Mode 1 · Existing local application
-
-```mermaid
-flowchart LR
-    EXE[Existing EXE] --> DEP[Dependency verification] --> ENV[Environment setup] --> APP[App server]
-    APP --> FE[Frontend :3000]
-    APP --> BE[Backend] --> RE[Risk Engine]
-```
-
-Launchers, startup scripts, datasets, APIs, and ports are preserved. Works without the Copilot.
-
-### Mode 2 · Local AI Copilot
-
-```mermaid
-flowchart LR
-    RS[RiskShield] --> BE[Backend] --> OL[Ollama] --> Z[Zephyr 7B]
-```
-
-Inference runs on-device, so transaction context need not go to an external LLM service.
-
-### Mode 3 · Docker Compose
-
-```mermaid
-flowchart TB
-    DC[Docker Compose] --> FE[Frontend]
-    DC --> BE[Backend]
-    BE --> OL[Ollama] --> Z[Zephyr 7B]
-```
-
-### Mode 4 · Production VPS
-
-```mermaid
-flowchart TB
-    NET((Internet)) --> NG[Nginx · HTTPS · Domain]
-    NG --> FE[Frontend container]
-    NG --> BE[Backend container]
-    BE --> OL[Host Ollama<br/>localhost only]
-    OL --> Z[Zephyr 7B]
-```
-
-```text
-Ubuntu VPS
-├── Nginx            (TLS termination, reverse proxy)
-├── Docker
-│   ├── RiskShield Frontend
-│   └── RiskShield Backend
-└── Ollama           (host-level, bound to localhost)
-    └── Zephyr 7B
-```
-
-> 🔒 **Ollama port `11434` must never be exposed publicly.** Bind to localhost or a private network only.
-
-### Deploy checklist
+| Mode | Description | Best for |
+|---|---|---|
+| **1 · Local app** | Windows installer / `start_app.bat`, Risk Engine only | Demos, offline use |
+| **2 · Local + Copilot** | Backend + local Ollama + Zephyr | Private AI-assisted investigation |
+| **3 · Docker** | Frontend + Backend containers (+ Ollama) | Reproducible environments |
+| **4 · Production VPS** | Nginx/HTTPS → Docker app → host Ollama | Public deployment |
 
 ```bash
-cp .env.example .env                          # configure secrets and URLs
-curl -fsSL https://ollama.com/install.sh | sh # install Ollama
-ollama pull zephyr:7b-beta                    # fetch the model
+cp .env.example .env
 docker compose build
 docker compose up -d
 docker compose ps
-# verify: /api/health and /api/copilot/health
 ```
 
----
+> 🔒 **Never expose Ollama's port `11434` publicly.** Details in [ARCHITECTURE.md](ARCHITECTURE.md#-deployment-topologies).
 
-## 🔐 Security Architecture
+### Configuration
 
-```mermaid
-flowchart TB
-    U[User] --> NG[HTTPS / Nginx]
-    NG --> API[Backend API<br/>validation · CORS · auth]
-    API --> RE[Risk Engine]
-    API --> CP[Copilot]
-    CP --> OL[Ollama · private]
-```
-
-| Control | Purpose |
+| Variable | Purpose |
 |---|---|
-| Environment-based secrets | No credentials in code or frontend |
-| Nothing secret committed to Git | `.env` ignored; `.env.example` documents keys |
-| HTTPS everywhere in production | Transport security |
-| Restricted CORS | Only approved frontend origins |
-| Request validation | Pydantic-style schemas on all inputs |
-| Controlled backend tools | No arbitrary SQL from the LLM |
-| Private Ollama endpoint | No public model access |
-| Safe error handling | No internal details leaked to clients |
-| Optional authentication integration | Plug into existing identity systems |
+| `APP_ENV` | Application environment |
+| `BACKEND_HOST` / `BACKEND_PORT` | Backend bind address and port |
+| `OLLAMA_BASE_URL` | Ollama server address |
+| `OLLAMA_MODEL` | AI model name |
+| `CORS_ORIGINS` | Allowed frontend origins |
+| `SECRET_KEY` | Application security secret |
+| `DATABASE_URL` | Database connection (if supported by your deployment) |
 
 ---
 
-## 🩺 Health & Failure Modes
-
-| Scenario | Backend | Risk Engine | Ollama | Copilot |
-|---|---|---|---|---|
-| All healthy | 🟢 | 🟢 | 🟢 | 🟢 Available |
-| Ollama stopped or model missing | 🟢 | 🟢 | 🔴 | 🔴 Unavailable |
-| Slow inference or timeout | 🟢 | 🟢 | 🟡 | 🟡 Degraded, with timeout handling |
-
-**Isolation guarantee:** LLM latency or failure cannot block or alter core risk analysis. Probe with `GET /api/health` and `GET /api/copilot/health`.
-
----
-
-## ⚡ Performance & Scalability
-
-Zephyr 7B latency depends on CPU, RAM, GPU/VRAM, quantization, concurrency, and context size. Because the Risk Engine and Copilot are logically separate, slow inference never blocks scoring.
-
-```mermaid
-flowchart TB
-    LB[Load balancer] --> B1[Backend] & B2[Backend] & B3[Backend]
-    B1 & B2 & B3 --> RS[Risk services]
-    B1 & B2 & B3 --> AI[AI inference layer]
-```
-
-Planned scaling: stateless backend replicas, a shared risk-services tier, and a dedicated (optionally GPU-backed, distributed) inference layer.
-
----
-
-## 📈 Evaluation Methodology
-
-```mermaid
-flowchart LR
-    DS[Dataset] --> SP{Split}
-    SP -->|train / tune| TR[Model development]
-    SP -->|held-out test| HT[Test set]
-    TR --> DET[Fraud detector]
-    HT --> DET
-    DET --> MET[Precision · Recall · F1 · FPR]
-    MET --> FPC[False Positive Cost]
-```
-
-- The test set is **never** used for training or tuning.
-- `False Positive Cost = False Positives × Estimated Cost per False Positive`, with the unit cost configurable to the business.
-- Only results from real experiments are reported. No benchmark numbers are asserted in the documentation until they exist.
-
----
-
-## 📁 Repository Layout
+## 📁 Project Structure
 
 ```text
 RiskShield/
 ├── backend/
 │   ├── app/
-│   │   ├── api/
-│   │   ├── copilot/        # ollama_client · service · prompts · schemas
-│   │   ├── risk_engine/
+│   │   ├── api/             # REST routes
+│   │   ├── copilot/         # ollama_client · service · prompts · schemas
+│   │   ├── risk_engine/     # scoring, rules, anomalies
 │   │   ├── models/
 │   │   ├── services/
 │   │   └── main.py
 │   ├── requirements.txt
 │   └── Dockerfile
-├── frontend/
-│   ├── app/ · components/ · services/ · public/
-│   ├── package.json
-│   └── Dockerfile
-├── data/                   # datasets · processed · indexes
+├── frontend/                # Next.js dashboard + Copilot UI
+├── data/                    # datasets · processed · indexes
 ├── scripts/
 ├── nginx/
 ├── docker-compose.yml
 ├── .env.example
-├── DEPLOYMENT.md
 ├── ARCHITECTURE.md
+├── DEPLOYMENT.md
 └── README.md
 ```
 
 ---
 
+## 🧪 Testing
+
+| Area | Coverage |
+|---|---|
+| **Risk Engine** | Preprocessing, feature extraction, scoring, probability, rules, anomalies |
+| **Detector evaluation** | Precision, recall, F1, FPR, false-positive cost on held-out data |
+| **Copilot** | Valid questions, missing evidence, invalid IDs, Ollama/model down, timeouts, large context |
+| **Security** | Secret isolation, input validation, CORS, SQL-execution prevention, prompt-injection resistance |
+| **Deployment** | `docker compose config` → `build` → `up` |
+
+---
+
+## 🩺 Troubleshooting
+
+```bash
+ollama list                    # is Zephyr installed?
+ollama pull zephyr:7b-beta     # download the model
+docker compose ps              # service status
+docker compose logs -f         # live logs
+```
+
+If Ollama is unavailable, the Copilot reports **UNAVAILABLE** while the Backend and Risk Engine stay **HEALTHY**.
+
+---
+
+## 📌 Project Status
+
+| Component | Status |
+|---|---|
+| Core risk management | 🟢 Active |
+| Fraud-risk detection | 🟢 Active |
+| Risk evidence generation | 🟢 Active |
+| AI Copilot (Ollama + Zephyr) | 🟢 Integrated |
+| Windows installer | 🟢 Available |
+| Docker / VPS deployment | 🟢 Supported |
+| Evaluation framework | 🟡 Metrics to be populated from real held-out results |
+
+---
+
+## 🔮 Roadmap
+
+- [ ] Publish held-out evaluation results (precision / recall / F1 / FP cost)
+- [ ] Real-time transaction streaming
+- [ ] Graph-based fraud and entity-relationship analysis
+- [ ] Account-takeover detection
+- [ ] Historical case retrieval (RAG) and analyst feedback loops
+- [ ] Model monitoring and drift detection
+- [ ] Audit trails and enterprise authentication
+- [ ] Case management and automated investigation workflows
+- [ ] GPU acceleration and distributed inference
+
+---
+
+## 🤝 Contributing
+
+```bash
+git checkout -b feature/<feature-name>
+git commit -m "Add <feature>"
+git push origin feature/<feature-name>
+```
+
+Open a pull request describing **what** changed, **why**, the **testing and evaluation** performed, and any **deployment implications**.
+
+---
+
+## ⚠️ Disclaimer
+
+RiskShield AI is an analytical and decision-support system. Its risk assessments and AI-generated explanations must be reviewed by qualified analysts and are not an unconditional determination of fraud. The Copilot reasons only over evidence supplied by the system and does not replace financial, legal, compliance, or security procedures.
+
+---
+
 <div align="center">
 
-**The Risk Engine detects. The AI Copilot explains. The analyst decides.**
+**🛡️ RiskShield AI: Detect. Explain. Investigate. Decide.**
+
+Built by [Deep455-16](https://github.com/Deep455-16)
 
 </div>
